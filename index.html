@@ -1,0 +1,3456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>D&D 2024 Character Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --parchment:#f4edd8;--parchment2:#ece3c5;--parchment3:#e2d5ae;
+  --ink:#1a1208;--ink2:#3d2e10;--ink3:#7a6035;--ink4:#b5a070;
+  --red:#7a1515;--red2:#a52020;--gold:#c8922a;--gold2:#e8c96a;
+  --green:#2d5a1b;--border:#9a7840;--borderl:#c8a868;
+  --panel:rgba(255,255,255,0.35);--shadow:rgba(30,20,10,0.2);
+  --blue:#1a3a6a;--purple:#5a1a8a;--green:#2d5a1b;
+}
+body{background:#1e1408;background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 6px);font-family:'Crimson Text',serif;color:var(--ink);min-height:100vh;padding:1rem 1rem 80px;}
+/* MODAL OVERLAY */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:var(--parchment);border:3px solid var(--border);border-radius:8px;max-width:760px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.6);}
+#modal-close{position:absolute;top:10px;right:12px;font-family:'Cinzel',serif;font-size:18px;background:none;border:none;cursor:pointer;color:var(--ink3);line-height:1;}
+#modal-close:hover{color:var(--red);}
+#modal-title{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:1rem;border-bottom:2px solid var(--border);padding-bottom:0.5rem;}
+.modal-tabs{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap;}
+.modal-tab{font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.08em;padding:5px 12px;border:1.5px solid var(--border);border-radius:4px;cursor:pointer;background:transparent;color:var(--ink3);transition:all 0.15s;}
+.modal-tab.active{background:var(--gold);color:white;border-color:var(--gold);}
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.picker-card{border:1.5px solid var(--borderl);border-radius:6px;padding:10px;cursor:pointer;transition:all 0.15s;background:var(--panel);}
+.picker-card:hover{border-color:var(--gold);background:rgba(200,146,42,0.1);}
+.picker-card.selected{border-color:var(--gold);border-width:2px;background:rgba(200,146,42,0.15);}
+.picker-card h3{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.picker-card p{font-size:12px;color:var(--ink3);line-height:1.4;}
+.picker-card .badge{display:inline-block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;margin:2px 2px 0 0;background:rgba(200,146,42,0.2);color:var(--gold);border:1px solid var(--gold);}
+.picker-detail{margin-top:1rem;padding:1rem;border:1.5px solid var(--borderl);border-radius:6px;background:var(--panel);display:none;}
+.picker-detail.open{display:block;}
+.picker-detail h4{font-family:'Cinzel',serif;font-size:15px;font-weight:700;margin-bottom:8px;}
+.picker-detail p{font-size:14px;line-height:1.6;margin-bottom:6px;}
+.picker-detail ul{font-size:13px;line-height:1.7;margin-left:1.2em;}
+.confirm-btn{font-family:'Cinzel',serif;font-size:12px;background:var(--red);color:white;border:none;border-radius:5px;padding:8px 20px;cursor:pointer;margin-top:1rem;letter-spacing:0.08em;transition:all 0.15s;}
+.confirm-btn:hover{background:var(--red2);}
+/* SHEET */
+.sheet{background:var(--parchment);background-image:radial-gradient(ellipse at 20% 10%,rgba(200,170,100,0.25) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(180,140,80,0.15) 0%,transparent 50%);max-width:940px;margin:0 auto;border:3px solid var(--border);border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,0.55),inset 0 0 60px rgba(200,170,120,0.08);padding:1.5rem;}
+.sheet-masthead{text-align:center;border-bottom:2.5px solid var(--border);padding-bottom:.75rem;margin-bottom:1rem;}
+.sheet-masthead h1{font-family:'Cinzel',serif;font-size:11px;font-weight:400;letter-spacing:.3em;color:var(--ink3);text-transform:uppercase;}
+.sheet-masthead h2{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:.04em;}
+.sheet-masthead .edition{font-family:'Crimson Text',serif;font-style:italic;font-size:13px;color:var(--ink3);}
+/* header */
+.hdr-grid{display:grid;grid-template-columns:1fr auto;gap:1rem;margin-bottom:1rem;}
+.hdr-fields{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px 10px;}
+.field{display:flex;flex-direction:column;gap:2px;}
+.field label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;}
+.field input,.field select{font-family:'Crimson Text',serif;font-size:15px;border:none;border-bottom:1px solid var(--borderl);background:transparent;color:var(--ink);padding:1px 2px;outline:none;width:100%;}
+.field input:focus,.field select:focus{border-bottom-color:var(--gold);}
+.pick-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.06em;background:transparent;border:1px solid var(--border);color:var(--ink3);border-radius:3px;padding:1px 5px;cursor:pointer;margin-left:4px;transition:all .15s;}
+.pick-btn:hover{background:var(--gold);color:white;border-color:var(--gold);}
+.insp-level{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 16px;border:2px solid var(--border);border-radius:6px;background:var(--panel);min-width:90px;}
+.insp-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--ink3);transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.insp-btn.on{background:var(--gold);border-color:var(--gold);color:white;box-shadow:0 0 10px rgba(200,146,42,.5);}
+.lvl-disp{font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--ink);line-height:1;}
+/* MAIN */
+.main-grid{display:grid;grid-template-columns:152px 1fr;gap:1rem;}
+.abilities-col{display:flex;flex-direction:column;gap:5px;}
+.pb-box{border:2px solid var(--border);border-radius:6px;background:var(--panel);padding:5px;text-align:center;margin-bottom:3px;}
+.pb-box .pbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;}
+.pb-box .pbv{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);}
+.ab-box{border:2px solid var(--border);border-radius:7px;background:var(--panel);padding:5px 4px;text-align:center;transition:border-color .15s;}
+.ab-box:hover{border-color:var(--gold);}
+.ab-short{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;}
+.ab-score{font-family:'Cinzel',serif;font-size:26px;font-weight:700;border:none;background:transparent;color:var(--ink);text-align:center;width:100%;outline:none;-moz-appearance:textfield;}
+.ab-score::-webkit-outer-spin-button,.ab-score::-webkit-inner-spin-button{-webkit-appearance:none;}
+.ab-mod{font-family:'Cinzel',serif;font-size:14px;font-weight:600;width:32px;height:32px;border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:2px auto 0;background:white;color:var(--ink2);cursor:pointer;transition:all .15s;}
+.ab-mod:hover{background:var(--gold);color:white;border-color:var(--gold);}
+/* right col */
+.right-col{display:flex;flex-direction:column;gap:8px;}
+.panel{border:1.5px solid var(--borderl);border-radius:6px;background:var(--panel);padding:8px 10px;}
+.ptitle{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.13em;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--borderl);padding-bottom:3px;margin-bottom:6px;}
+.combat-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:5px;}
+.stat-box{border:1.5px solid var(--borderl);border-radius:6px;background:var(--panel);padding:5px 3px;text-align:center;}
+.slbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;margin-bottom:2px;}
+.sinp{font-family:'Cinzel',serif;font-size:19px;font-weight:600;border:none;background:transparent;color:var(--ink);text-align:center;width:100%;outline:none;-moz-appearance:textfield;}
+.sinp::-webkit-outer-spin-button,.sinp::-webkit-inner-spin-button{-webkit-appearance:none;}
+.clickable-stat{cursor:pointer;}
+.clickable-stat:hover .sinp{color:var(--red);}
+.hp-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;align-items:start;}
+.ds-mini{border:1.5px solid var(--borderl);border-radius:6px;background:var(--panel);padding:6px 8px;}
+.ds-row{display:flex;align-items:center;gap:4px;font-family:'Cinzel',serif;font-size:9px;color:var(--ink3);margin-bottom:3px;}
+.ds-c{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;transition:background .15s;}
+.ds-c.son{background:var(--green);border-color:var(--green);}
+.ds-c.fon{background:var(--red);border-color:var(--red);}
+.ss-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.skill-row{display:flex;align-items:center;gap:4px;padding:1.5px 0;font-size:12px;cursor:pointer;}
+.skill-row:hover .sk-name{color:var(--red);}
+.prof-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;transition:background .15s;}
+.prof-dot.p1{background:var(--ink2);border-color:var(--ink2);}
+.prof-dot.p2{background:var(--gold);border-color:var(--gold);outline:1.5px solid var(--border);outline-offset:1px;}
+.sk-bonus{font-family:'Cinzel',serif;font-size:10px;font-weight:600;min-width:22px;color:var(--ink2);}
+.sk-name{flex:1;color:var(--ink);}
+.sk-attr{font-size:9px;color:var(--ink4);font-family:'Cinzel',serif;}
+/* attacks */
+.atk-hdr{display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:5px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.07em;color:var(--ink3);padding:0 2px 4px;border-bottom:1px solid var(--borderl);margin-bottom:3px;text-transform:uppercase;}
+.atk-row2{display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:5px;align-items:center;padding:2px 0;border-bottom:.5px solid rgba(180,150,100,.3);}
+.atk-inp{font-family:'Crimson Text',serif;font-size:13px;border:none;background:transparent;color:var(--ink);outline:none;width:100%;}
+.ratk{font-family:'Cinzel',serif;font-size:9px;background:var(--red);color:white;border:none;border-radius:3px;padding:2px 6px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.ratk:hover{background:var(--red2);}
+/* feats */
+.feats-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.feat-chip{font-family:'Cinzel',serif;font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid var(--gold);color:var(--gold);background:rgba(200,146,42,.1);cursor:pointer;transition:all .15s;}
+.feat-chip:hover{background:rgba(200,146,42,.25);}
+.feat-chip.origin{border-color:var(--blue);color:var(--blue);background:rgba(26,58,106,.1);}
+.feat-chip.general{border-color:var(--green);color:var(--green);background:rgba(45,90,27,.1);}
+.feat-chip.epic{border-color:var(--purple);color:var(--purple);background:rgba(74,26,106,.1);}
+.add-feat-btn{font-family:'Cinzel',serif;font-size:9px;padding:2px 8px;border-radius:3px;border:1px dashed var(--border);color:var(--ink3);background:transparent;cursor:pointer;transition:all .15s;}
+.add-feat-btn:hover{border-color:var(--gold);color:var(--gold);}
+/* bottom */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.text-area-in{font-family:'Crimson Text',serif;font-size:13px;border:none;background:transparent;color:var(--ink);width:100%;resize:none;outline:none;line-height:1.6;}
+.sub-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;margin:5px 0 2px;}
+/* currency */
+.cur-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px;}
+.coin{text-align:center;}
+.coin-lbl{font-family:'Cinzel',serif;font-size:10px;font-weight:700;margin-bottom:2px;}
+.cp{color:#888;}.sp{color:#888;}.ep{color:#4a8a2a;}.gp{color:var(--gold);}.pp{color:#6655cc;}
+.coin input{font-family:'Cinzel',serif;font-size:13px;border:none;border-bottom:1px solid var(--borderl);background:transparent;color:var(--ink);text-align:center;width:100%;outline:none;}
+/* traits banner */
+.traits-banner{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.trait-tag{font-family:'Cinzel',serif;font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--borderl);color:var(--ink2);background:rgba(255,255,255,.5);}
+.trait-tag span{font-weight:600;color:var(--ink);}
+/* DICE BAR */
+#dice-bar{position:fixed;bottom:0;left:0;right:0;background:#16100a;border-top:2.5px solid var(--gold);padding:.55rem 1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,.5);}
+.d-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold2);text-transform:uppercase;white-space:nowrap;}
+.d-btn{font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--parchment);background:#261a08;border:1.5px solid var(--gold);border-radius:5px;padding:4px 9px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.d-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px);}
+.d-btn:active{transform:scale(.95);animation:droll .4s ease;}
+.d-btn.rolling{animation:droll .4s ease;}
+@keyframes droll{0%{transform:rotate(0)scale(1)}25%{transform:rotate(-14deg)scale(1.1)}50%{transform:rotate(8deg)scale(1.15)}75%{transform:rotate(-4deg)scale(1.05)}100%{transform:rotate(0)scale(1)}}
+.d-mod-wrap{display:flex;align-items:center;gap:4px;}
+.d-mod-wrap label{font-family:'Cinzel',serif;font-size:10px;color:var(--gold2);}
+.d-mod-wrap input{font-family:'Cinzel',serif;font-size:12px;width:42px;background:#261a08;border:1px solid var(--border);color:var(--parchment);text-align:center;border-radius:4px;padding:3px;outline:none;}
+.d-mod-wrap input:focus{border-color:var(--gold);}
+.cust-roll{display:flex;align-items:center;gap:4px;}
+.cust-roll input{font-family:'Cinzel',serif;font-size:12px;width:68px;background:#261a08;border:1px solid var(--border);color:var(--parchment);text-align:center;border-radius:4px;padding:4px;outline:none;}
+.cust-roll input:focus{border-color:var(--gold);}
+#roll-result{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:180px;}
+#roll-disp{font-family:'Cinzel',serif;font-size:12px;color:#777;flex:1;transition:all .3s;}
+#roll-disp.flash{animation:rflash .5s ease;}
+@keyframes rflash{0%{transform:scale(1.3);color:var(--gold2)}100%{transform:scale(1)}}
+#roll-tot{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--gold2);min-width:36px;text-align:center;}
+#roll-tot.crit{color:#7dff7d;animation:cglow .6s ease;}
+#roll-tot.fumble{color:#ff6b6b;animation:fshake .4s ease;}
+@keyframes cglow{0%{transform:scale(2)}100%{transform:scale(1)}}
+@keyframes fshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+#log-panel{position:fixed;right:1rem;bottom:62px;width:210px;background:#16100a;border:1.5px solid var(--gold);border-radius:7px;padding:9px;display:none;z-index:99;max-height:280px;overflow-y:auto;}
+#log-panel.open{display:block;}
+#log-panel h3{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--gold2);text-transform:uppercase;margin-bottom:6px;border-bottom:.5px solid #333;padding-bottom:3px;}
+.log-e{font-family:'Crimson Text',serif;font-size:12px;color:#ccc;padding:2px 0;border-bottom:.5px solid #221808;line-height:1.3;}
+.log-e .lt{font-family:'Cinzel',serif;font-weight:700;color:var(--gold2);font-size:13px;}
+.log-e .lc{color:#7dff7d;}.log-e .lf{color:#ff6b6b;}
+.log-tog{font-family:'Cinzel',serif;font-size:10px;background:#261a08;border:1px solid var(--gold);color:var(--gold2);padding:3px 9px;border-radius:4px;cursor:pointer;letter-spacing:.07em;transition:all .15s;}
+.log-tog:hover{background:var(--gold);color:var(--ink);}
+/* toast */
+#toast{position:fixed;top:1rem;right:1rem;background:#16100a;border:1.5px solid var(--gold);border-radius:7px;padding:9px 14px;font-family:'Cinzel',serif;font-size:12px;color:var(--gold2);z-index:600;opacity:0;transform:translateY(-10px);transition:all .3s;pointer-events:none;}
+#toast.show{opacity:1;transform:translateY(0);}
+/* spells panel */
+.spell-slots{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:6px;}
+.spell-slot{text-align:center;}
+.ssl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.06em;color:var(--ink3);}
+.slot-pips{display:flex;justify-content:center;gap:2px;margin-top:2px;flex-wrap:wrap;}
+.slot-pip{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;transition:background .15s;}
+.slot-pip.used{background:var(--border);}
+@media(max-width:700px){
+  .main-grid{grid-template-columns:1fr;}
+  .abilities-col{flex-direction:row;flex-wrap:wrap;}
+  .ab-box{width:calc(33% - 4px);}
+  .combat-row{grid-template-columns:repeat(3,1fr);}
+  .ss-row{grid-template-columns:1fr;}
+  .bottom-grid{grid-template-columns:1fr;}
+  .hdr-fields{grid-template-columns:1fr 1fr;}
+  #roll-result{min-width:120px;}
+}
+/* DM VIEW PANEL */
+#dm-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:800;background:#1a1208;border:2px solid var(--gold);border-radius:10px;
+  padding:0;width:440px;max-width:95vw;box-shadow:0 24px 80px rgba(0,0,0,.8);
+  display:none;user-select:none;}
+#dm-panel.open{display:block;}
+#dm-panel-header{background:#261808;border-radius:8px 8px 0 0;padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;cursor:move;
+  border-bottom:1px solid #3a2a10;}
+#dm-panel-header h3{font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+  color:var(--gold2);letter-spacing:.08em;margin:0;}
+#dm-close{background:none;border:none;color:var(--gold2);font-size:18px;cursor:pointer;
+  line-height:1;padding:0 2px;}
+#dm-close:hover{color:white;}
+#dm-body{padding:14px;}
+.dm-char-name{font-family:'Cinzel',serif;font-size:18px;font-weight:700;
+  color:white;text-align:center;margin-bottom:4px;letter-spacing:.04em;}
+.dm-class-line{font-family:'Crimson Text',serif;font-size:13px;
+  color:var(--gold2);text-align:center;margin-bottom:12px;font-style:italic;}
+.dm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.dm-card{background:#261808;border:1.5px solid #3a2a10;border-radius:7px;
+  padding:10px 8px;text-align:center;transition:border-color .2s;}
+.dm-card:hover{border-color:var(--gold);}
+.dm-card.danger{border-color:#8b1a1a;background:#200a0a;}
+.dm-card.warning{border-color:#8b5a00;background:#1e1400;}
+.dm-card.good{border-color:var(--green);background:#0a180a;}
+.dm-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;
+  color:#888;text-transform:uppercase;margin-bottom:4px;}
+.dm-val{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:white;line-height:1;}
+.dm-val.big{font-size:32px;}
+.dm-sub{font-family:'Crimson Text',serif;font-size:11px;color:#888;margin-top:2px;}
+.dm-hp-bar{height:10px;background:#2a1a08;border-radius:5px;overflow:hidden;margin:8px 0;}
+.dm-hp-fill{height:100%;border-radius:5px;transition:width .4s,background .4s;}
+.dm-conditions{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.dm-condition-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.05em;
+  padding:3px 8px;border-radius:4px;border:1px solid #444;background:transparent;
+  color:#888;cursor:pointer;transition:all .15s;}
+.dm-condition-btn.active{background:#8b1a1a;border-color:#8b1a1a;color:white;}
+.dm-section-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;
+  color:#666;text-transform:uppercase;margin:10px 0 6px;
+  display:flex;align-items:center;gap:6px;}
+.dm-section-title::after{content:'';flex:1;height:.5px;background:#333;}
+.dm-skill-row{display:flex;justify-content:space-between;align-items:center;
+  padding:3px 0;border-bottom:.5px solid #2a1a08;}
+.dm-skill-row span{font-family:'Crimson Text',serif;font-size:12px;color:#ccc;}
+.dm-skill-row strong{font-family:'Cinzel',serif;font-size:12px;color:var(--gold2);}
+.dm-notes{width:100%;background:#1a1008;border:1px solid #333;border-radius:4px;
+  color:#ccc;font-family:'Crimson Text',serif;font-size:13px;padding:6px 8px;
+  resize:none;outline:none;margin-top:6px;line-height:1.5;}
+.dm-overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:799;display:none;}
+.dm-overlay-bg.open{display:block;}
+</style>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+<div id="modal-box">
+  <button id="modal-close">✕</button>
+  <div id="modal-title">Choose Species</div>
+  <div class="modal-tabs" id="modal-tabs"></div>
+  <div id="modal-body"></div>
+  <div id="picker-detail" class="picker-detail"></div>
+  <button class="confirm-btn" id="confirm-btn" style="display:none;">Confirm →</button>
+</div>
+</div>
+
+<!-- LOG -->
+<div id="log-panel"><h3>Roll History</h3><div id="log-entries"></div></div>
+
+<!-- DM OVERLAY BG -->
+<div id="dm-overlay-bg" class="dm-overlay-bg" onclick="closeDMView()"></div>
+
+<!-- DM PANEL -->
+<div id="dm-panel">
+  <div id="dm-panel-header">
+    <h3>🎲 DM View</h3>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-family:'Cinzel',serif;font-size:9px;color:#888;letter-spacing:.08em;" id="dm-last-update"></span>
+      <button id="dm-close" onclick="closeDMView()">✕</button>
+    </div>
+  </div>
+  <div id="dm-body">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- SHEET -->
+<div class="sheet">
+  <div class="sheet-masthead">
+    <h1>Dungeons &amp; Dragons</h1>
+    <h2>Character Sheet</h2>
+    <div class="edition">2024 Player's Handbook</div>
+  </div>
+
+  <!-- SAVE/LOAD BAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px;padding:7px 10px;border:1px solid var(--borderl);border-radius:6px;background:var(--panel);">
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;">Save Slot:</span>
+      <select id="saveSlot" style="font-family:'Cinzel',serif;font-size:11px;border:1px solid var(--borderl);background:var(--parchment2);color:var(--ink);border-radius:3px;padding:3px 6px;outline:none;cursor:pointer;">
+        <option value="slot1">Slot 1</option>
+        <option value="slot2">Slot 2</option>
+        <option value="slot3">Slot 3</option>
+        <option value="slot4">Slot 4</option>
+        <option value="slot5">Slot 5</option>
+      </select>
+      <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--ink3);" id="slotInfo">Empty</div>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      <button onclick="saveChar()" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:var(--green);color:white;border:none;border-radius:4px;padding:5px 12px;cursor:pointer;transition:opacity .15s;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">💾 Save</button>
+      <button onclick="loadChar()" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:var(--blue);color:white;border:none;border-radius:4px;padding:5px 12px;cursor:pointer;transition:opacity .15s;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">📂 Load</button>
+      <button onclick="deleteSlot()" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:transparent;color:var(--ink3);border:1px solid var(--borderl);border-radius:4px;padding:5px 12px;cursor:pointer;">🗑 Delete</button>
+      <div style="width:1px;background:var(--borderl);margin:0 3px;"></div>
+      <button onclick="exportChar()" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:transparent;color:var(--ink3);border:1px solid var(--borderl);border-radius:4px;padding:5px 12px;cursor:pointer;" title="Export to JSON file">⬇ Export</button>
+      <label style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:transparent;color:var(--ink3);border:1px solid var(--borderl);border-radius:4px;padding:5px 12px;cursor:pointer;" title="Import from JSON file">
+        ⬆ Import<input type="file" accept=".json" onchange="importChar(event)" style="display:none;" />
+      </label>
+      <button onclick="newChar()" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:transparent;color:var(--red);border:1px solid var(--red);border-radius:4px;padding:5px 12px;cursor:pointer;" title="Reset to blank sheet">✦ New</button>
+      <div style="width:1px;background:var(--borderl);margin:0 3px;"></div>
+      <input id="roomCode" maxlength="8" placeholder="ROOM CODE" title="Everyone in the party enters the SAME code. DM opens DM View first, then players click Share."
+        style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;width:100px;border:1.5px solid var(--borderl);background:var(--parchment2);color:var(--ink);border-radius:3px;padding:3px 7px;outline:none;"
+        oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')" />
+      <select id="partySlot" style="font-family:'Cinzel',serif;font-size:11px;border:1px solid var(--borderl);background:var(--parchment2);color:var(--ink);border-radius:3px;padding:3px 6px;outline:none;cursor:pointer;" title="Your player slot">
+        <option value="P1">P1</option>
+        <option value="P2">P2</option>
+        <option value="P3">P3</option>
+        <option value="P4">P4</option>
+        <option value="P5">P5</option>
+        <option value="P6">P6</option>
+      </select>
+      <button onclick="startSharing()" id="shareBtn" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:#4a1a8a;color:white;border:none;border-radius:4px;padding:5px 12px;cursor:pointer;" title="Share your character with the DM">📡 Share</button>
+      <button onclick="stopSharing()" id="stopBtn" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:#5a3a00;color:#e8c96a;border:1px solid #8b5a00;border-radius:4px;padding:5px 12px;cursor:pointer;display:none;" title="Stop sharing">■ Stop</button>
+      <span id="peerStatus" style="font-family:'Cinzel',serif;font-size:10px;color:var(--ink3);"></span>
+      <button onclick="openPartyDMView()" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.07em;background:#1a3a6a;color:white;border:none;border-radius:4px;padding:5px 12px;cursor:pointer;" title="Open DM view for this room">🎲 DM View</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="hdr-grid">
+    <div>
+      <div class="field" style="margin-bottom:8px;">
+        <label>Character Name</label>
+        <input id="charName" placeholder="Enter character name..." style="font-size:22px;font-family:'Cinzel',serif;font-weight:600;"/>
+      </div>
+      <div class="hdr-fields">
+        <div class="field">
+          <label>Class &amp; Level <button class="pick-btn" onclick="openClassPicker()">▾ Pick</button></label>
+          <input id="classLevel" placeholder="e.g. Fighter 3" oninput="onClassInput(this.value)"/>
+        </div>
+        <div class="field">
+          <label>Species <button class="pick-btn" onclick="openModal('species')">▾ Pick</button></label>
+          <input id="species" placeholder="Human" readonly style="cursor:pointer;" onclick="openModal('species')"/>
+        </div>
+        <div class="field">
+          <label>Background <button class="pick-btn" onclick="openModal('background')">▾ Pick</button></label>
+          <input id="background" placeholder="Soldier" readonly style="cursor:pointer;" onclick="openModal('background')"/>
+        </div>
+        <div class="field">
+          <label>Alignment</label>
+          <input id="alignment" placeholder="e.g. Neutral Good"/>
+        </div>
+        <div class="field">
+          <label>Player Name</label>
+          <input id="playerName" placeholder="Your name"/>
+        </div>
+        <div class="field">
+          <label>Experience Points</label>
+          <input id="xp" placeholder="0" type="number"/>
+        </div>
+        <div class="field">
+          <label>Hit Dice</label>
+          <input id="hitDice" placeholder="5d10"/>
+        </div>
+        <div class="field">
+          <label>Subclass</label>
+          <input id="subclass" placeholder="e.g. Champion"/>
+        </div>
+      </div>
+      <!-- traits from species/background -->
+      <div class="traits-banner" id="traitsBanner" style="margin-top:8px;"></div>
+      <!-- Feats row -->
+      <div style="margin-top:6px;">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin-bottom:4px;">Feats
+          <button class="pick-btn" onclick="openModal('feat')" style="margin-left:4px;">+ Add</button>
+        </div>
+        <div class="feats-list" id="featsList">
+
+        </div>
+      </div>
+    </div>
+    <div class="insp-level">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--ink3);">LEVEL</div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <button onclick="changeLevel(-1)" style="font-family:'Cinzel',serif;font-size:14px;background:transparent;border:1px solid var(--border);color:var(--ink3);border-radius:3px;width:20px;height:20px;cursor:pointer;line-height:1;padding:0;">−</button>
+        <div class="lvl-disp" id="levelDisplay">1</div>
+        <button onclick="changeLevel(1)" style="font-family:'Cinzel',serif;font-size:14px;background:var(--red);border:1px solid var(--red);color:white;border-radius:3px;width:20px;height:20px;cursor:pointer;line-height:1;padding:0;">+</button>
+      </div>
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;color:var(--ink3);">XP Needed</div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;font-weight:600;color:var(--ink2);" id="xpNeeded">300</div>
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--ink3);margin-top:4px;">INSP.</div>
+      <button class="insp-btn" id="inspBtn" onclick="toggleInsp()">✦</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-grid">
+    <!-- ABILITIES -->
+    <div class="abilities-col">
+      <div class="pb-box">
+        <div class="pbl">Proficiency</div>
+        <div class="pbv" id="pbDisplay">+3</div>
+      </div>
+      <div id="abilityBoxes"></div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-col">
+      <!-- COMBAT -->
+      <div class="combat-row">
+        <div class="stat-box" style="grid-column:span 2;padding:6px 8px;cursor:pointer;" onclick="openACPanel()" title="Click to configure AC">
+          <div class="slbl">Armor Class <span style="font-size:7px;color:var(--gold);">⚙ configure</span></div>
+          <div class="sinp" id="ac" style="cursor:pointer;">10</div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="acFormula">10 + DEX</div>
+        </div>
+        <div class="stat-box clickable-stat" onclick="quickRoll(20,'Initiative',getMod(scores.dex))" title="Click to roll">
+          <div class="slbl">Initiative ⚄</div><div class="sinp" id="initDisplay">+2</div>
+        </div>
+        <div class="stat-box"><div class="slbl">Speed</div><input class="sinp" id="speed" type="number" value="30"/></div>
+        <div class="stat-box"><div class="slbl">Passive Perc.</div><div class="sinp" id="passPerc">12</div></div>
+        <div class="stat-box clickable-stat" onclick="quickRoll(20,'Perception Check',getSkillBonus('Perception'))" title="Click to roll">
+          <div class="slbl">Perception ⚄</div><div class="sinp" id="percDisp">+2</div>
+        </div>
+      </div>
+      <!-- HP -->
+      <div class="hp-row">
+        <div class="stat-box">
+          <div class="slbl">Max HP <span style="font-size:7px;color:var(--gold);cursor:pointer;" onclick="openHpHistory()" title="HP breakdown">📋</span></div>
+          <div class="sinp" id="hpMax" style="cursor:default;">8</div>
+          <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--ink3);margin-top:1px;" id="hpFormula">1×d8 + CON</div>
+        </div>
+        <div class="stat-box"><div class="slbl">Current HP</div><input class="sinp" id="hpCurrent" type="number" value="8"/></div>
+        <div class="stat-box"><div class="slbl">Temp HP</div><input class="sinp" id="hpTemp" type="number" value="0"/></div>
+        <div class="ds-mini">
+          <div style="font-family:'Cinzel',serif;font-size:7px;color:var(--ink3);margin-bottom:4px;letter-spacing:.08em;">DEATH SAVES</div>
+          <div class="ds-row">✓
+            <div class="ds-c" onclick="toggleDS(this,'s')"></div>
+            <div class="ds-c" onclick="toggleDS(this,'s')"></div>
+            <div class="ds-c" onclick="toggleDS(this,'s')"></div>
+          </div>
+          <div class="ds-row">✗
+            <div class="ds-c" onclick="toggleDS(this,'f')"></div>
+            <div class="ds-c" onclick="toggleDS(this,'f')"></div>
+            <div class="ds-c" onclick="toggleDS(this,'f')"></div>
+          </div>
+        </div>
+      </div>
+      <!-- SAVES + SKILLS -->
+      <div class="ss-row">
+        <div class="panel">
+          <div class="ptitle">Saving Throws</div>
+          <div id="savesContainer"></div>
+        </div>
+        <div class="panel">
+          <div class="ptitle">Skills <span style="font-size:9px;color:var(--ink4);">(click name to roll)</span></div>
+          <div id="skillsContainer"></div>
+        </div>
+      </div>
+      <!-- ATTACKS -->
+      <div class="panel">
+        <div class="ptitle">Attacks &amp; Spellcasting</div>
+        <div class="atk-hdr"><span>Name</span><span>Hit Bonus</span><span>Damage / Type</span><span></span></div>
+        <div id="atkRows">
+          <div class="atk-row2"><input class="atk-inp" placeholder="Longsword"/><input class="atk-inp" placeholder="+7" style="font-family:'Cinzel',serif;font-size:13px;"/><input class="atk-inp" placeholder="1d8+4 slashing"/><button class="ratk" onclick="rollAttack(this)">Roll ⚄</button></div>
+          <div class="atk-row2"><input class="atk-inp" placeholder="Shortbow"/><input class="atk-inp" placeholder="+5" style="font-family:'Cinzel',serif;font-size:13px;"/><input class="atk-inp" placeholder="1d6+2 piercing"/><button class="ratk" onclick="rollAttack(this)">Roll ⚄</button></div>
+          <div class="atk-row2"><input class="atk-inp" placeholder="Name"/><input class="atk-inp" placeholder="+0" style="font-family:'Cinzel',serif;font-size:13px;"/><input class="atk-inp" placeholder="Damage"/><button class="ratk" onclick="rollAttack(this)">Roll ⚄</button></div>
+        </div>
+        <textarea class="text-area-in" style="margin-top:6px;min-height:30px;" placeholder="Spell save DC, spell attack bonus, notes..."></textarea>
+      </div>
+      <!-- SPELL SLOTS -->
+      <div class="panel" id="spellSlotsPanel">
+        <div class="ptitle">Spell Slots</div>
+        <div class="spell-slots" id="spellSlots"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom-grid">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="panel">
+        <div class="ptitle">Equipment &amp; Currency</div>
+        <div class="cur-grid">
+          <div class="coin"><div class="coin-lbl cp">CP</div><input type="number" value="0"/></div>
+          <div class="coin"><div class="coin-lbl sp">SP</div><input type="number" value="0"/></div>
+          <div class="coin"><div class="coin-lbl ep">EP</div><input type="number" value="0"/></div>
+          <div class="coin"><div class="coin-lbl gp">GP</div><input type="number" value="0"/></div>
+          <div class="coin"><div class="coin-lbl pp">PP</div><input type="number" value="0"/></div>
+        </div>
+        <textarea class="text-area-in" style="min-height:80px;" placeholder="Chain mail, longsword, shield, explorer's pack..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Species Traits</div>
+        <textarea class="text-area-in" id="speciesTraitsText" style="min-height:60px;" placeholder="Select a species above to populate..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Features, Traits &amp; Class Abilities</div>
+        <textarea class="text-area-in" style="min-height:90px;" placeholder="Second Wind (1d10+level), Action Surge, Extra Attack, Fighting Style: Defense (+1 AC), Weapon Mastery..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Armor Training &amp; Shield</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;" id="armorTrainingBadges">
+          <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);">Pick a class to populate</span>
+        </div>
+        <div style="font-family:'Crimson Text',serif;font-size:12px;color:var(--ink3);margin-top:4px;">
+          Click <strong>Armor Class</strong> at the top to set armor type, shield &amp; bonuses.
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Proficiencies &amp; Languages</div>
+        <textarea class="text-area-in" id="profText" style="min-height:60px;" placeholder="Select a background above to populate..."></textarea>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="panel">
+        <div class="ptitle">Personality Traits</div>
+        <textarea class="text-area-in" style="min-height:45px;" placeholder="I face problems head-on..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Ideals</div>
+        <textarea class="text-area-in" style="min-height:35px;" placeholder="Greater Good. Our lot is to lay down our lives in defense of others..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Bonds</div>
+        <textarea class="text-area-in" style="min-height:35px;" placeholder="I fight for those who cannot fight for themselves..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Flaws</div>
+        <textarea class="text-area-in" style="min-height:35px;" placeholder="My hatred of my enemies is blind and unreasoning..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Background Feature &amp; Notes</div>
+        <textarea class="text-area-in" id="bgFeatureText" style="min-height:70px;" placeholder="Select a background above to populate..."></textarea>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Backstory &amp; Notes</div>
+        <textarea class="text-area-in" style="min-height:70px;" placeholder="History, allies, enemies, organizations..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DICE BAR -->
+<div id="dice-bar">
+  <span class="d-lbl">🎲 Dice</span>
+  <button class="d-btn" onclick="rollDie(4,'d4')">d4</button>
+  <button class="d-btn" onclick="rollDie(6,'d6')">d6</button>
+  <button class="d-btn" onclick="rollDie(8,'d8')">d8</button>
+  <button class="d-btn" onclick="rollDie(10,'d10')">d10</button>
+  <button class="d-btn" onclick="rollDie(12,'d12')">d12</button>
+  <button class="d-btn" onclick="rollDie(20,'d20')" style="border-color:#c8a030;color:#c8a030;">d20</button>
+  <button class="d-btn" onclick="rollDie(100,'d100')">d100</button>
+  <div class="cust-roll">
+    <span class="d-lbl">Custom:</span>
+    <input id="customIn" placeholder="2d6+3" onkeydown="if(event.key==='Enter')rollCustom()"/>
+    <button class="d-btn" onclick="rollCustom()">Roll</button>
+  </div>
+  <div class="d-mod-wrap">
+    <label>Mod:</label>
+    <input id="dMod" type="number" value="0"/>
+  </div>
+  <div id="roll-result">
+    <div>
+      <div id="roll-disp">— roll a die —</div>
+    </div>
+    <div id="roll-tot">—</div>
+    <button class="log-tog" onclick="toggleLog()">Log ▾</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATA — 2024 PHB
+// ════════════════════════════════════════════════════
+const SPECIES_2024 = [
+  {name:"Aasimar",size:"Medium",speed:30,new2024:true,lineages:["Protector","Scourge","Fallen"],
+   traits:["Darkvision 60 ft","Celestial Resistance (necrotic & radiant)","Healing Hands (PB d4s)","Light cantrip","Celestial Revelation (Lv 3): choose Radiant Soul (fly speed), Radiant Consumption, or Necrotic Shroud"],
+   desc:"Mortals touched by divine forces, bearing celestial heritage. Gain temporary transformations at level 3.",
+   playstyle:"Great for Paladin, Cleric, Warlock. Healing Hands + Radiant Soul make them excellent support/hybrid fighters."},
+  {name:"Dragonborn",size:"Medium",speed:30,new2024:false,lineages:["Black","Blue","Brass","Bronze","Copper","Gold","Green","Red","Silver","White"],
+   traits:["Darkvision 60 ft","Breath Weapon (scales to 4d10 at Lv 11)","Damage Resistance (matching ancestry)","Draconic Flight (Lv 5, bonus action wings)"],
+   desc:"Proud kin of true dragons. Choose an ancestral color that determines your breath weapon damage type.",
+   playstyle:"Frontline melee or Paladin synergy. Breath Weapon is now usable as part of attack action (2024)."},
+  {name:"Dwarf",size:"Medium",speed:30,new2024:false,lineages:["Hill (Duergar)","Mountain"],
+   traits:["Darkvision 120 ft","Dwarven Resilience (resistance to poison, adv on poison saves)","Stonecunning: Tremorsense 60 ft for 10 min (PB/day)","Tool Proficiency: Brewer, Mason, or Smith","Weapon Training: battle axe, handaxe, light/heavy hammer, warpick"],
+   desc:"Sturdy folk of mountain halls. Gain Tremorsense (2024 upgrade) and extraordinary poison resilience.",
+   playstyle:"Durable, great for any melee class. 120 ft Darkvision is exceptional. Stonecunning is now far more useful."},
+  {name:"Elf",size:"Medium",speed:30,new2024:false,lineages:["Drow","High Elf","Wood Elf"],
+   traits:["Darkvision 60 ft","Fey Ancestry (immune to magical sleep, adv vs charm)","Keen Senses (proficiency in Perception)","Trance (4 hr long rest)","Elven Lineage: spells at Lv 3 & 5 based on lineage"],
+   desc:"Ancient Feywild-touched folk. Each lineage grants unique innate spells at levels 3 and 5.",
+   playstyle:"Wood Elf: Ranger/Rogue (Pass Without Trace). High Elf: Wizard/Arcane caster. Drow: Warlock/Bard."},
+  {name:"Gnome",size:"Small",speed:30,new2024:false,lineages:["Forest Gnome","Rock Gnome"],
+   traits:["Darkvision 60 ft","Gnomish Cunning (adv on Int/Wis/Cha saves)","Gnomish Lineage spells","Forest: Speak with Animals at will + Minor Illusion","Rock: Mending, Prestidigitation, + crafting bonus"],
+   desc:"Magical small folk blessed by gods of invention. Rock Gnomes craft; Forest Gnomes commune with animals.",
+   playstyle:"Excellent for Wizard, Artificer, or any caster. Gnomish Cunning is phenomenal against spells."},
+  {name:"Goliath",size:"Medium",speed:35,new2024:true,lineages:["Cloud Giant","Fire Giant","Frost Giant","Hill Giant","Stone Giant","Storm Giant"],
+   traits:["Speed 35 ft (fastest in PHB)","Giant Ancestry: unique power based on lineage (PB uses/day)","Large Form: bonus action to become Large","Powerful Build: count as Large for carry/grapple"],
+   desc:"Descendants of giants with six lineage choices. Each grants a different combat power.",
+   playstyle:"Frontline warrior. Large Form + Powerful Build = incredible grappler. Fire Giant adds damage, Storm Giant lightning."},
+  {name:"Halfling",size:"Small",speed:30,new2024:false,lineages:["Lightfoot","Stout"],
+   traits:["Brave (adv vs frightened)","Halfling Nimbleness (move through larger creature space)","Luck: reroll 1s on attacks, saves, ability checks","Naturally Stealthy: hide behind creatures 1 size larger"],
+   desc:"Lucky small folk with extraordinary rerolling ability. Luck triggers automatically — no decision needed.",
+   playstyle:"Excellent Rogue, Ranger, or any class where consistent results matter. Luck is arguably the best racial trait."},
+  {name:"Human",size:"Medium",speed:30,new2024:false,lineages:["Standard"],
+   traits:["Resourceful: gain Heroic Inspiration after every Long Rest","Skillful: proficiency in one additional skill","Versatile: gain one Origin feat at Lv 1 (from Background AND an extra one)"],
+   desc:"The most adaptable species. In 2024, every Human gains an extra Origin Feat — making them uniquely powerful at level 1.",
+   playstyle:"Outstanding for any class. Two Origin feats at Lv 1 (one from Background + one from Versatile) = huge head start."},
+  {name:"Orc",size:"Medium",speed:30,new2024:true,lineages:["Standard"],
+   traits:["Darkvision 120 ft","Adrenaline Rush: Dash as bonus action, gain PB temp HP, PB times per short rest","Relentless Endurance: drop to 1 HP instead of 0, once per long rest"],
+   desc:"Powerful and determined wanderers. Half-Orcs replaced by full Orcs with enhanced features.",
+   playstyle:"Excellent melee combatant. Best defensive species in 2024 — two different forms of not dying. Great for Barbarian/Fighter."},
+  {name:"Tiefling",size:"Medium",speed:30,new2024:false,lineages:["Abyssal (Demonic)","Chthonic (Necrotic)","Infernal (Fire)"],
+   traits:["Darkvision 60 ft","Fiendish Legacy: resistance + spells per lineage","Abyssal: poison resist, Poison Spray, Ray of Sickness, Hold Person","Chthonic: necrotic resist, Chill Touch, False Life, Ray of Enfeeblement","Infernal: fire resist, Fire Bolt, Hellish Rebuke, Darkness"],
+   desc:"Mortals bearing fiendish blood. 2024 introduces three distinct lineages, each with a spell progression.",
+   playstyle:"Versatile caster support. Infernal is classic Warlock synergy. Chthonic suits Necromancer Wizards. Abyssal suits Druids."}
+];
+
+const BACKGROUNDS_2024 = [
+  {name:"Acolyte",feat:"Magic Initiate (Cleric)",skills:["Insight","Religion"],tool:"Calligrapher's Supplies",stats:["Intelligence","Wisdom","Charisma"],
+   desc:"A devoted servant in a place of worship, trained in rituals and divine lore.",feature:"You have shelter at any temple of your faith, and can call on clergy for healing."},
+  {name:"Artisan",feat:"Crafter",skills:["Investigation","Persuasion"],tool:"Artisan's Tools (one of your choice)",stats:["Strength","Dexterity","Intelligence"],
+   desc:"An apprentice in a trade guild, skilled in crafting and commerce.",feature:"Guild membership gives you shelter and support from fellow artisans in most cities."},
+  {name:"Charlatan",feat:"Skilled",skills:["Deception","Sleight of Hand"],tool:"Forgery Kit",stats:["Dexterity","Constitution","Charisma"],
+   desc:"A con artist and trickster who thrives on deception and false personas.",feature:"You have a false identity complete with documentation and an alternate disguise."},
+  {name:"Criminal",feat:"Alert",skills:["Sleight of Hand","Stealth"],tool:"Thieves' Tools",stats:["Dexterity","Constitution","Intelligence"],
+   desc:"A thief or gang member who survived on cunning and underworld connections.",feature:"You have a contact in the criminal underworld who can obtain information for you."},
+  {name:"Entertainer",feat:"Musician",skills:["Acrobatics","Performance"],tool:"Musical Instrument (your choice)",stats:["Strength","Dexterity","Charisma"],
+   desc:"A performer — musician, acrobat, or actor — who has captivated audiences.",feature:"Your performances earn free lodging and food at inns where you entertain."},
+  {name:"Farmer",feat:"Tough",skills:["Animal Handling","Nature"],tool:"Carpenter's Tools",stats:["Strength","Constitution","Wisdom"],
+   desc:"A laborer of the land, familiar with livestock and the rhythms of nature.",feature:"Rural folk are always willing to provide a farmer with shelter and information."},
+  {name:"Guard",feat:"Alert",skills:["Athletics","Perception"],tool:"Gaming Set (your choice)",stats:["Strength","Intelligence","Wisdom"],
+   desc:"A soldier or town watchman trained to spot and confront threats.",feature:"Guards and soldiers generally help you find information and offer you lodging."},
+  {name:"Guide",feat:"Magic Initiate (Druid)",skills:["Stealth","Survival"],tool:"Cartographer's Tools",stats:["Dexterity","Constitution","Wisdom"],
+   desc:"A wilderness pathfinder who knows the dangers of the open road.",feature:"You know every road and shortcut in a region; locals trust and shelter you."},
+  {name:"Hermit",feat:"Healer",skills:["Medicine","Religion"],tool:"Herbalism Kit",stats:["Constitution","Wisdom","Charisma"],
+   desc:"A solitary mystic who spent years in isolation seeking deeper truths.",feature:"Your isolation revealed a great secret — work with your DM to determine what."},
+  {name:"Merchant",feat:"Lucky",skills:["Animal Handling","Persuasion"],tool:"Navigator's Tools",stats:["Constitution","Intelligence","Charisma"],
+   desc:"A traveling trader experienced in negotiation and reading people.",feature:"You have access to merchant networks who can source rare goods or pass on news."},
+  {name:"Noble",feat:"Skilled",skills:["History","Persuasion"],tool:"Gaming Set (your choice)",stats:["Strength","Constitution","Intelligence"],
+   desc:"Born to privilege, trained in etiquette, politics, and leadership.",feature:"People of lesser status defer to you; doors others can't open yield to your title."},
+  {name:"Sage",feat:"Magic Initiate (Wizard)",skills:["Arcana","History"],tool:"Calligrapher's Supplies",stats:["Constitution","Intelligence","Wisdom"],
+   desc:"A scholar who spent years studying tomes in great libraries and archives.",feature:"You can find other scholars who will share information; great libraries shelter you."},
+  {name:"Sailor",feat:"Tavern Brawler",skills:["Acrobatics","Perception"],tool:"Navigator's Tools",stats:["Strength","Dexterity","Wisdom"],
+   desc:"A seafarer who navigated storms and traded stories in port taverns.",feature:"Sailors and pirates treat you as a peer; you can get free passage on ships."},
+  {name:"Scribe",feat:"Skilled",skills:["Investigation","Perception"],tool:"Calligrapher's Supplies",stats:["Dexterity","Intelligence","Wisdom"],
+   desc:"A careful handler of texts and documents, with a razor-sharp eye for detail.",feature:"You have contacts in bureaucracies who can help you find official documents."},
+  {name:"Soldier",feat:"Savage Attacker",skills:["Athletics","Intimidation"],tool:"Gaming Set (your choice)",stats:["Strength","Dexterity","Constitution"],
+   desc:"A seasoned warrior drilled in combat and military tactics.",feature:"Soldiers respect your rank; you can commandeer horses, food, and lodgings."},
+  {name:"Wayfarer",feat:"Lucky",skills:["Insight","Stealth"],tool:"Thieves' Tools",stats:["Dexterity","Wisdom","Charisma"],
+   desc:"A street-smart wanderer who learned survival on the fringes of society.",feature:"The urban poor protect each other; you can always find shelter in the slums."}
+];
+
+const FEATS_2024 = {
+  origin:[
+    {name:"Alert",desc:"Initiative +5; can't be surprised; aware of invisible attackers (no disadvantage vs them)."},
+    {name:"Crafter",desc:"Proficiency in 3 Artisan's Tools. During long rest, craft items worth up to 5×PB GP."},
+    {name:"Healer",desc:"Use Healer's Kit as Utilize action; target spends Hit Dice + PB to heal."},
+    {name:"Lucky",desc:"PB Lucky Points per long rest. Spend to reroll attack, save, or ability check (take either result)."},
+    {name:"Magic Initiate (Cleric)",desc:"Learn 2 Cleric cantrips + 1 Lv 1 Cleric spell. Cast the Lv 1 spell once free; again with spell slots."},
+    {name:"Magic Initiate (Druid)",desc:"Learn 2 Druid cantrips + 1 Lv 1 Druid spell. Cast the Lv 1 spell once free; again with spell slots."},
+    {name:"Magic Initiate (Wizard)",desc:"Learn 2 Wizard cantrips + 1 Lv 1 Wizard spell. Cast the Lv 1 spell once free; again with spell slots."},
+    {name:"Musician",desc:"Proficiency in 3 Musical Instruments. After Short/Long Rest, grant Heroic Inspiration to allies (PB creatures)."},
+    {name:"Savage Attacker",desc:"Once per turn when you hit with a weapon, roll damage twice and use higher result."},
+    {name:"Skilled",desc:"Gain proficiency in any 3 skills or tools of your choice."},
+    {name:"Tavern Brawler",desc:"Unarmed strikes deal 1d4. Reroll 1s on unarmed damage. Can use furniture as improvised weapons."},
+    {name:"Tough",desc:"Maximum HP increases by 2 per level (retroactive). Effectively +2 HP per character level."},
+  ],
+  general:[
+    {name:"Actor",desc:"+1 CHA (max 20). Mimic voices. Advantage on Deception/Performance when posing as another."},
+    {name:"Athlete",desc:"+1 STR or DEX. Stand from prone costs 5 ft. Climb at full speed. Running jump needs only 5 ft."},
+    {name:"Charger",desc:"+1 STR or CON. Bonus action after Dash: weapon attack or shove."},
+    {name:"Crossbow Expert",desc:"+1 DEX. Ignore loading. No disadvantage at melee range. Bonus action offhand crossbow attack."},
+    {name:"Crusher",desc:"+1 STR or CON. Once per turn bludgeoning hit: push 5 ft. Crit = advantage to all attackers until your next turn."},
+    {name:"Defensive Duelist",desc:"+1 DEX. Reaction when hit with finesse weapon: +PB to AC for that attack."},
+    {name:"Dual Wielder",desc:"+1 STR or DEX. Two-weapon fighting with any 1-handed melee. Draw/stow both weapons at once."},
+    {name:"Durable",desc:"+1 CON (max 20). Min HP regained from Hit Dice = 2×CON mod."},
+    {name:"Elemental Adept",desc:"+1 INT/WIS/CHA. Choose damage type; treat 1s as 2s; ignore resistance to that type."},
+    {name:"Fey Touched",desc:"+1 INT/WIS/CHA. Learn Misty Step + 1 Lv 1 Divination/Enchantment. Each once free per long rest."},
+    {name:"Great Weapon Master",desc:"+1 STR. Critical or kill with heavy weapon: bonus action attack. -5 to hit for +PB damage (optional)."},
+    {name:"Heavily Armored",desc:"+1 STR. Proficiency in Heavy Armor."},
+    {name:"Keen Mind",desc:"+1 INT. Always know N/S/E/W. Know elapsed time accurately. Recall anything seen/heard in 1 month."},
+    {name:"Mage Slayer",desc:"+1 STR/DEX/CON. Creature in your reach casts spell: reaction to attack. Disadvantage on con saves for casters near you."},
+    {name:"Martial Weapon Training",desc:"+1 STR or DEX. Proficiency in all Martial Weapons."},
+    {name:"Medium Armor Master",desc:"+1 STR or DEX. DEX bonus to medium armor AC = +3 (not capped at +2). Stealth no disadvantage."},
+    {name:"Observant",desc:"+1 INT or WIS. Read lips. Passive Perception +5. Passive Investigation +5."},
+    {name:"Polearm Master",desc:"+1 STR or DEX. Bonus action attack with polearm butt (d4). Opportunity attack when enemy enters reach."},
+    {name:"Resilient",desc:"+1 to chosen ability (max 20). Proficiency in saving throws of that ability."},
+    {name:"Ritual Caster",desc:"+1 INT/WIS/CHA. Ritual spellbook with 2 Lv 1 ritual spells. Add rituals found during adventures."},
+    {name:"Sentinel",desc:"+1 STR/DEX/CON. OA on hit: target speed 0. React to target avoiding OA. Attack enemies attacking allies."},
+    {name:"Sharpshooter",desc:"+1 DEX. No disadvantage at long range. Ignore 3/4 cover. -5 to hit for +PB damage (optional)."},
+    {name:"Shield Master",desc:"+1 STR. Bonus action shove when you attack. Add shield bonus to Dex saves. Reaction to halve Dex save damage."},
+    {name:"Skill Expert",desc:"+1 to any ability. Proficiency in one skill. Expertise (double PB) in one skill you're proficient in."},
+    {name:"Skulker",desc:"+1 DEX. Hide when lightly obscured. Ranged miss doesn't reveal position. Dim light doesn't give disadvantage on Perception."},
+    {name:"Slasher",desc:"+1 STR or DEX. Slashing hit: reduce target speed by 10 ft until your next turn. Crit: disadvantage on attacks until your next turn."},
+    {name:"Speedy",desc:"+1 DEX or CON. Speed +10 ft. Ignore difficult terrain when you Dash. OAs against you have disadvantage."},
+    {name:"Spell Sniper",desc:"+1 INT/WIS/CHA. Range of attack spells doubled. Ignore half + 3/4 cover. Learn one attack cantrip."},
+    {name:"War Caster",desc:"+1 INT/WIS/CHA. Advantage on CON saves for concentration while taking damage. Cast spell as OA."},
+    {name:"Weapon Master",desc:"+1 STR or DEX. Proficiency in 4 weapons. Gain the Mastery property of one chosen weapon."},
+  ],
+  epic:[
+    {name:"Epic Boon of Combat Prowess",desc:"+1 to any ability. When you miss a melee attack, you can make another melee attack as part of the same action."},
+    {name:"Epic Boon of Dimensional Travel",desc:"+1 to any ability. As a Bonus Action, Misty Step (no spell slot). After you cast it, you can bring one willing creature."},
+    {name:"Epic Boon of Energy Resistance",desc:"+1 to any ability. Resistance to 2 damage types of your choice. Replace choices on long rest."},
+    {name:"Epic Boon of Fortitude",desc:"+1 CON. HP max increases by 40. When reduced to 0 HP, you drop to 1 HP instead (once per long rest)."},
+    {name:"Epic Boon of Irresistible Offense",desc:"+1 STR or DEX. Your weapon attacks score crit on 19 or 20. Damage you deal ignores resistance."},
+    {name:"Epic Boon of Luck",desc:"+1 to any ability. Gain one extra Lucky point per long rest (in addition to Lucky feat if you have it)."},
+    {name:"Epic Boon of the Night Spirit",desc:"+1 to any ability. While in dim light or darkness: Invisibility (concentration). Resistance to all damage while invisible."},
+    {name:"Epic Boon of Recovery",desc:"+1 CON. As a Bonus Action, regain HP = half your HP maximum (once per long rest). Ignore exhaustion effects."},
+    {name:"Epic Boon of Skill Proficiency",desc:"+1 to any ability. Proficiency in all skills. You cannot have less than Expertise in any skill you're proficient in."},
+    {name:"Epic Boon of Speed",desc:"+1 DEX. Speed increases by 30 ft. Dash is a Bonus Action for you at no cost."},
+    {name:"Epic Boon of Spell Recall",desc:"+1 INT/WIS/CHA. When you expend a spell slot, roll a d4; on 4, the slot is not expended."},
+    {name:"Epic Boon of Truesight",desc:"+1 to any ability. You have Truesight with a range of 60 feet."},
+  ]
+};
+
+const CLASSES = [
+  {name:"Barbarian", hd:"d12", sp:"STR,CON", saves:["str","con"], slots:null,
+   armor:["Light","Medium","Shields"], weapons:["Simple","Martial"],
+   skillCount:2, skillPool:["Animal Handling","Athletics","Intimidation","Nature","Perception","Survival"]},
+  {name:"Bard", hd:"d8", sp:"DEX,CHA", saves:["dex","cha"], slots:[4,3,3,3,2,1,1,0,0],
+   armor:["Light"], weapons:["Simple","Hand Crossbows","Longswords","Rapiers","Shortswords"],
+   skillCount:3, skillPool:["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Perception","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"]},
+  {name:"Cleric", hd:"d8", sp:"WIS,CHA", saves:["wis","cha"], slots:[4,3,3,3,2,1,1,0,0],
+   armor:["Light","Medium","Shields"], weapons:["Simple"],
+   skillCount:2, skillPool:["History","Insight","Medicine","Persuasion","Religion"]},
+  {name:"Druid", hd:"d8", sp:"INT,WIS", saves:["int","wis"], slots:[4,3,3,3,2,1,1,0,0],
+   armor:["Light","Medium","Shields"], weapons:["Simple"],
+   skillCount:2, skillPool:["Animal Handling","Arcana","Insight","Medicine","Nature","Perception","Religion","Survival"]},
+  {name:"Fighter", hd:"d10", sp:"STR,DEX", saves:["str","con"], slots:null,
+   armor:["Light","Medium","Heavy","Shields"], weapons:["Simple","Martial"],
+   skillCount:2, skillPool:["Acrobatics","Animal Handling","Athletics","History","Insight","Intimidation","Perception","Survival"]},
+  {name:"Monk", hd:"d8", sp:"STR,DEX", saves:["str","dex"], slots:null,
+   armor:[], weapons:["Simple","Shortswords"],
+   skillCount:2, skillPool:["Acrobatics","Athletics","History","Insight","Religion","Stealth"]},
+  {name:"Paladin", hd:"d10", sp:"WIS,CHA", saves:["wis","cha"], slots:[4,3,0,0,0,0,0,0,0],
+   armor:["Light","Medium","Heavy","Shields"], weapons:["Simple","Martial"],
+   skillCount:2, skillPool:["Athletics","Insight","Intimidation","Medicine","Persuasion","Religion"]},
+  {name:"Ranger", hd:"d10", sp:"STR,DEX", saves:["str","dex"], slots:[4,3,0,0,0,0,0,0,0],
+   armor:["Light","Medium","Shields"], weapons:["Simple","Martial"],
+   skillCount:3, skillPool:["Animal Handling","Athletics","Insight","Investigation","Nature","Perception","Stealth","Survival"]},
+  {name:"Rogue", hd:"d8", sp:"DEX,INT", saves:["dex","int"], slots:null,
+   armor:["Light"], weapons:["Simple","Hand Crossbows","Longswords","Rapiers","Shortswords"],
+   skillCount:4, skillPool:["Acrobatics","Athletics","Deception","Insight","Intimidation","Investigation","Perception","Performance","Persuasion","Sleight of Hand","Stealth"]},
+  {name:"Sorcerer", hd:"d6", sp:"CON,CHA", saves:["con","cha"], slots:[4,3,3,3,2,1,1,0,0],
+   armor:[], weapons:["Simple","Daggers"],
+   skillCount:2, skillPool:["Arcana","Deception","Insight","Intimidation","Persuasion","Religion"]},
+  {name:"Warlock", hd:"d8", sp:"WIS,CHA", saves:["wis","cha"], slots:[2,0,0,0,0,0,0,0,0],
+   armor:["Light"], weapons:["Simple","Daggers"],
+   skillCount:2, skillPool:["Arcana","Deception","History","Intimidation","Investigation","Nature","Religion"]},
+  {name:"Wizard", hd:"d6", sp:"INT,WIS", saves:["int","wis"], slots:[4,3,3,3,2,1,1,0,0],
+   armor:[], weapons:["Daggers","Darts","Slings","Quarterstaffs","Light Crossbows"],
+   skillCount:2, skillPool:["Arcana","History","Insight","Investigation","Medicine","Religion"]},
+];
+
+// ════════════════════════════════════════════════════
+// SHEET STATE
+// ════════════════════════════════════════════════════
+const ABILITIES = [
+  {key:'str',short:'STR',name:'Strength'},
+  {key:'dex',short:'DEX',name:'Dexterity'},
+  {key:'con',short:'CON',name:'Constitution'},
+  {key:'int',short:'INT',name:'Intelligence'},
+  {key:'wis',short:'WIS',name:'Wisdom'},
+  {key:'cha',short:'CHA',name:'Charisma'}
+];
+const SKILLS = [
+  {name:'Acrobatics',attr:'dex'},{name:'Animal Handling',attr:'wis'},
+  {name:'Arcana',attr:'int'},{name:'Athletics',attr:'str'},
+  {name:'Deception',attr:'cha'},{name:'History',attr:'int'},
+  {name:'Insight',attr:'wis'},{name:'Intimidation',attr:'cha'},
+  {name:'Investigation',attr:'int'},{name:'Medicine',attr:'wis'},
+  {name:'Nature',attr:'int'},{name:'Perception',attr:'wis'},
+  {name:'Performance',attr:'cha'},{name:'Persuasion',attr:'cha'},
+  {name:'Religion',attr:'int'},{name:'Sleight of Hand',attr:'dex'},
+  {name:'Stealth',attr:'dex'},{name:'Survival',attr:'wis'}
+];
+// ── BASE SCORES (before any ASI) ──────────────────────────
+const baseScores = {str:10,dex:10,con:10,int:10,wis:10,cha:10};
+// applied ASI bonuses from feats {str:0, dex:0, ...}
+const asiBonus = {str:0,dex:0,con:0,int:0,wis:0,cha:0};
+// computed = base + asi (capped at 20 unless epic)
+const scores = {str:10,dex:10,con:10,int:10,wis:10,cha:10};
+
+function recalcScores(cap){
+  // If any epic boon is active, allow scores up to 30
+  const hasEpic = Object.values(window._featAsiChoices||{}).flat().some(c=>c.isEpic);
+  const effectiveCap = cap || (hasEpic ? 30 : 20);
+  ABILITIES.forEach(ab=>{
+    scores[ab.key]=Math.min(effectiveCap,baseScores[ab.key]+(asiBonus[ab.key]||0));
+  });
+}
+
+const savingProf = {str:false,con:false,dex:false,int:false,wis:false,cha:false};
+const skillProf = {};
+let level=1, rollHistory=[], toastTimer, currentModal=null, pendingPick=null;
+let selectedSpecies=null, selectedBackground=null;
+let spellSlotData=[];
+// HP tracking
+let hpRolls = [];
+let activeFeats = [];
+
+// ── All togglable feat effects ───────────────────────────
+let featEffects = {
+  tough:          false,  // +2 HP/level
+  alert:          false,  // +5 initiative
+  observant:      false,  // +5 passive perception
+  epicFort:       false,  // +40 HP max
+  medArmorMaster: false,  // medium armor DEX cap +3
+  heavyArmorProf: false,  // heavy armor training
+  resilientSave:  null,   // ability key granted save prof by Resilient
+};
+// Legacy flags kept in sync by updateAll
+let toughActive = false;
+let alertActive = false;
+// Skill expertise {skillName: true}
+let expertiseSkills = {};
+// Speed bonuses from feats {featName: bonus}
+let featSpeedBonuses = {};
+
+// XP thresholds per level (2024 PHB)
+const XP_TABLE = [0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000];
+const LEVEL_FEATURES = {
+  1:  ["Class features, proficiencies, Background Origin Feat"],
+  2:  ["Class feature (varies)"],
+  3:  ["Subclass feature (choose subclass)"],
+  4:  ["Ability Score Improvement / Feat"],
+  5:  ["Extra Attack (martial) or Lv 3 spell slots"],
+  6:  ["Class feature"],
+  7:  ["Class feature"],
+  8:  ["Ability Score Improvement / Feat"],
+  9:  ["Lv 5 spell slots"],
+  10: ["Class feature / Subclass feature"],
+  11: ["Class feature (Lv 6 spell slots for casters)"],
+  12: ["Ability Score Improvement / Feat"],
+  16: ["Ability Score Improvement / Feat"],
+  19: ["Ability Score Improvement / Epic Boon Feat"],
+  20: ["Class Capstone feature"],
+};
+// Levels that grant ASI/Feat (all classes get these in 2024)
+const ASI_LEVELS = [4,8,12,16,19];
+
+const getMod=s=>Math.floor((s-10)/2);
+const fmtM=m=>(m>=0?'+':'')+m;
+const getPB=l=>Math.ceil(l/4)+1;
+const rand=n=>Math.floor(Math.random()*n)+1;
+function getSkillBonus(name){
+  const sk=SKILLS.find(s=>s.name===name);if(!sk)return 0;
+  const base=getMod(scores[sk.attr]);const pb=getPB(level);
+  const pl=skillProf[name]||0;
+  return base+(pl===1?pb:pl===2?pb*2:0);
+}
+
+// ── HP CALCULATION ─────────────────────────────────────────
+function getHitDieSides(){
+  const cls=getCurrentClass();
+  return cls ? parseInt(cls.hd.replace('d','')) : 8;
+}
+function getCurrentClass(){
+  const val=document.getElementById('classLevel').value;
+  const name=val.replace(/\d+/g,'').trim();
+  return CLASSES.find(c=>c.name.toLowerCase()===name.toLowerCase())||null;
+}
+function calcMaxHP(){
+  const hd = getHitDieSides();
+  const conMod = getMod(scores.con); // always live — never snapshot
+  const tough = (featEffects.tough||toughActive) ? level * 2 : 0;
+  const epicFort = featEffects.epicFort ? 40 : 0;
+  if(hpRolls.length === 0){
+    return Math.max(1, hd + conMod + tough + epicFort);
+  }
+  let diceTotal = 0;
+  hpRolls.forEach((r, i) => {
+    diceTotal += (i === 0) ? hd : r.roll;
+  });
+  return Math.max(1, diceTotal + (hpRolls.length * conMod) + tough + epicFort);
+}
+function recalcHP(){
+  const max = calcMaxHP();
+  const hd = getHitDieSides();
+  const conMod = getMod(scores.con);
+  const el = document.getElementById('hpMax');
+  const prev = parseInt(el.textContent) || 0;
+  el.textContent = max;
+  // flash if value changed
+  if(prev !== max && prev !== 0){
+    el.style.transition = 'color 0.3s';
+    el.style.color = max > prev ? 'var(--green)' : 'var(--red)';
+    setTimeout(() => { el.style.color = ''; }, 800);
+  }
+  document.getElementById('hpFormula').textContent =
+    `${hpRolls.length}×d${hd} + ${hpRolls.length}×CON(${fmtM(conMod)})${featEffects.tough?' + Tough':''}${featEffects.epicFort?' + Epic(+40)':''}`;
+}
+
+// ── LEVEL UP WIZARD ────────────────────────────────────────
+function changeLevel(delta){
+  const newLevel=Math.max(1,Math.min(20,level+delta));
+  if(newLevel===level)return;
+  if(delta>0){
+    openLevelUpWizard(newLevel);
+  } else {
+    levelDown(newLevel);
+  }
+}
+
+function levelDown(newLevel){
+  if(!confirm(`Drop to level ${newLevel}? This will remove the last HP roll.`)) return;
+  level=newLevel;
+  document.getElementById('levelDisplay').textContent=level;
+  document.getElementById('classLevel').value=
+    document.getElementById('classLevel').value.replace(/\d+/,level);
+  if(hpRolls.length>level) hpRolls=hpRolls.slice(0,level);
+  recalcHP();updateAll();
+  showToast(`Level dropped to ${level}`);
+}
+
+function openLevelUpWizard(newLevel){
+  currentModal='levelup';
+  const title=document.getElementById('modal-title');
+  const tabs=document.getElementById('modal-tabs');
+  const body=document.getElementById('modal-body');
+  const detail=document.getElementById('picker-detail');
+  const confirmBtn=document.getElementById('confirm-btn');
+  tabs.innerHTML='';detail.classList.remove('open');
+  confirmBtn.style.display='none';
+
+  const hd=getHitDieSides();
+  const conMod=getMod(scores.con);
+  const roll=rand(hd);
+  const hp=Math.max(1,roll+conMod);
+  const avg=Math.floor(hd/2)+1+conMod;
+  const isASILevel=ASI_LEVELS.includes(newLevel);
+  const features=LEVEL_FEATURES[newLevel]||['Class feature'];
+
+  // Store wizard state
+  window._wizardState={newLevel,hd,conMod,roll,hp,avg,isASILevel,hpChoice:null,confirmed:false};
+
+  title.textContent=`⬆ Level Up: ${newLevel}`;
+  body.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <!-- HP SECTION -->
+      <div style="border:1.5px solid var(--borderl);border-radius:6px;padding:12px;background:var(--panel);">
+        <div class="ptitle" style="margin-bottom:8px;">Hit Points</div>
+        <p style="font-size:13px;margin-bottom:8px;">Your class uses <strong>d${hd}</strong>. CON modifier: <strong>${fmtM(conMod)}</strong></p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div id="hp-roll-card" onclick="selectHpChoice('roll')" style="border:2px solid var(--borderl);border-radius:6px;padding:10px;text-align:center;cursor:pointer;transition:all .15s;">
+            <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--ink3);margin-bottom:6px;">ROLL THE DICE</div>
+            <div style="font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--red);" id="roll-result-display">[${roll}]</div>
+            <div style="font-family:'Cinzel',serif;font-size:16px;margin-top:4px;color:var(--ink);">= +${hp} HP</div>
+            <button onclick="event.stopPropagation();rerollHP()" style="font-family:'Cinzel',serif;font-size:10px;background:transparent;border:1px solid var(--border);color:var(--ink3);padding:3px 8px;border-radius:3px;cursor:pointer;margin-top:6px;">🎲 Reroll</button>
+          </div>
+          <div id="hp-avg-card" onclick="selectHpChoice('avg')" style="border:2px solid var(--borderl);border-radius:6px;padding:10px;text-align:center;cursor:pointer;transition:all .15s;">
+            <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--ink3);margin-bottom:6px;">TAKE AVERAGE</div>
+            <div style="font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:var(--blue);">${Math.floor(hd/2)+1}</div>
+            <div style="font-family:'Cinzel',serif;font-size:16px;margin-top:4px;color:var(--ink);">= +${avg} HP</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:6px;">Consistent gain</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES -->
+      <div style="border:1.5px solid var(--borderl);border-radius:6px;padding:12px;background:var(--panel);">
+        <div class="ptitle" style="margin-bottom:6px;">Level ${newLevel} Features</div>
+        <ul style="font-size:13px;line-height:1.7;margin-left:1.2em;color:var(--ink2);">
+          ${features.map(f=>`<li>${f}</li>`).join('')}
+        </ul>
+        ${isASILevel?`<div style="margin-top:8px;padding:8px;background:rgba(200,146,42,.12);border-radius:5px;border:1px solid var(--gold);">
+          <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:600;color:var(--gold);">✦ ASI / Feat available!</span>
+          <span style="font-size:12px;color:var(--ink2);"> — Use the Feat picker after confirming level up, or apply +2 to one score / +1 to two scores below.</span>
+        </div>`:''}
+      </div>
+
+      ${isASILevel?`
+      <!-- INLINE ASI -->
+      <div style="border:1.5px solid var(--borderl);border-radius:6px;padding:12px;background:var(--panel);">
+        <div class="ptitle" style="margin-bottom:8px;">Quick ASI (or use Feat picker)</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="asi-grid">
+          ${ABILITIES.map(ab=>`
+            <div style="text-align:center;">
+              <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--ink3);">${ab.short}</div>
+              <div style="font-size:15px;font-weight:600;">${scores[ab.key]} (${fmtM(getMod(scores[ab.key]))})</div>
+              <div style="display:flex;justify-content:center;gap:4px;margin-top:4px;">
+                <button onclick="applyQuickASI('${ab.key}',-1)" style="font-family:'Cinzel',serif;width:22px;height:22px;border:1px solid var(--border);background:transparent;color:var(--ink3);border-radius:3px;cursor:pointer;font-size:13px;padding:0;">−</button>
+                <span style="font-family:'Cinzel',serif;font-size:14px;font-weight:600;min-width:20px;text-align:center;" id="asi-disp-${ab.key}">+0</span>
+                <button onclick="applyQuickASI('${ab.key}',1)" style="font-family:'Cinzel',serif;width:22px;height:22px;border:1px solid var(--green);background:rgba(45,90,27,.1);color:var(--green);border-radius:3px;cursor:pointer;font-size:13px;padding:0;">+</button>
+              </div>
+            </div>`).join('')}
+        </div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);margin-top:8px;text-align:center;" id="asi-budget-display">Budget: +2 remaining</div>
+      </div>`:''}
+
+    </div>`;
+
+  window._wizardState.pendingASI={str:0,dex:0,con:0,int:0,wis:0,cha:0};
+  window._wizardState.asiBudget=2;
+
+  confirmBtn.style.display='block';
+  confirmBtn.textContent='Confirm Level Up →';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function selectHpChoice(choice){
+  window._wizardState.hpChoice=choice;
+  const rollCard=document.getElementById('hp-roll-card');
+  const avgCard=document.getElementById('hp-avg-card');
+  if(choice==='roll'){
+    rollCard.style.borderColor='var(--red)';rollCard.style.background='rgba(122,21,21,.08)';
+    avgCard.style.borderColor='var(--borderl)';avgCard.style.background='var(--panel)';
+  } else {
+    avgCard.style.borderColor='var(--blue)';avgCard.style.background='rgba(26,58,106,.08)';
+    rollCard.style.borderColor='var(--borderl)';rollCard.style.background='var(--panel)';
+  }
+}
+
+function rerollHP(){
+  const ws=window._wizardState;
+  ws.roll=rand(ws.hd);
+  ws.hp=Math.max(1,ws.roll+ws.conMod);
+  document.getElementById('roll-result-display').textContent=`[${ws.roll}]`;
+  document.getElementById('roll-result-display').nextElementSibling.textContent=`= +${ws.hp} HP`;
+  if(ws.hpChoice==='roll') selectHpChoice('roll');
+  const el=document.getElementById('roll-result-display');
+  el.style.animation='none';void el.offsetWidth;el.style.animation='droll .4s ease';
+}
+
+let _quickASIPending={str:0,dex:0,con:0,int:0,wis:0,cha:0};
+let _quickBudget=2;
+function applyQuickASI(key,delta){
+  const ws=window._wizardState;
+  if(!ws||!ws.isASILevel)return;
+  const cur=ws.pendingASI[key]||0;
+  if(delta>0&&ws.asiBudget<=0){showToast('No ASI budget left (max +2 total)');return;}
+  if(delta<0&&cur<=0)return;
+  if(delta>0&&(baseScores[key]+(asiBonus[key]||0)+cur+delta)>20){showToast('Max ability score is 20');return;}
+  ws.pendingASI[key]=(cur+delta);
+  ws.asiBudget-=delta;
+  document.getElementById(`asi-disp-${key}`).textContent=`+${ws.pendingASI[key]}`;
+  document.getElementById('asi-budget-display').textContent=`Budget: +${ws.asiBudget} remaining`;
+}
+
+function confirmLevelUp(){
+  const ws=window._wizardState;
+  if(!ws||ws.confirmed)return;
+  if(!ws.hpChoice){showToast('Choose Roll or Average for HP first!');return;}
+
+  // Apply HP — store only the die roll, CON is always applied live from current score
+  const dieRoll = ws.hpChoice==='roll' ? ws.roll : Math.floor(ws.hd/2)+1;
+  const conModNow = getMod(scores.con);
+  const hpGain = Math.max(1, dieRoll + conModNow);
+  hpRolls.push({roll: dieRoll});
+
+  // Apply ASI
+  if(ws.isASILevel){
+    ABILITIES.forEach(ab=>{
+      const delta=ws.pendingASI[ab.key]||0;
+      if(delta>0){
+        asiBonus[ab.key]=(asiBonus[ab.key]||0)+delta;
+        baseScores[ab.key]=baseScores[ab.key]; // keep base unchanged
+      }
+    });
+    recalcScores();
+    // Refresh input fields
+    renderAbilities();
+  }
+
+  // Apply level
+  level=ws.newLevel;
+  document.getElementById('levelDisplay').textContent=level;
+  document.getElementById('xpNeeded').textContent=(XP_TABLE[level]||'—').toLocaleString();
+  document.getElementById('classLevel').value=
+    (getCurrentClass()?.name||'Fighter')+' '+level;
+  document.getElementById('hitDice').value=`${level}d${ws.hd}`;
+
+  // Update HP
+  recalcHP();
+  // Set current HP = max HP on level up (heal on level)
+  document.getElementById('hpCurrent').value=calcMaxHP();
+
+  ws.confirmed=true;
+  updateAll();
+  closeModal();
+  showToast(`⬆ Level ${level}! +${hpGain} HP gained!`);
+  if(ws.isASILevel && Object.values(ws.pendingASI).some(v=>v>0)){
+    showToast('ASI applied — all stats recalculated!');
+  }
+}
+
+function openHpHistory(){
+  const hd=getHitDieSides();
+  const conMod=getMod(scores.con); // always live
+  let rows=hpRolls.map((r,i)=>{
+    const die = i===0 ? hd : r.roll;
+    const hp  = Math.max(1, die + conMod);
+    return `<tr style="border-bottom:0.5px solid var(--borderl);">
+      <td style="padding:4px 8px;font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);">${i+1}</td>
+      <td style="padding:4px 8px;text-align:center;font-family:'Cinzel',serif;font-size:14px;font-weight:700;">${die}${i===0?'<span style="font-size:9px;color:var(--ink3);"> (max)</span>':''}</td>
+      <td style="padding:4px 8px;text-align:center;font-family:'Cinzel',serif;">${fmtM(conMod)}</td>
+      <td style="padding:4px 8px;text-align:center;color:var(--green);font-weight:700;font-family:'Cinzel',serif;">+${hp}</td>
+    </tr>`;
+  }).join('');
+  if(!rows) rows='<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--ink3);">No HP rolls yet. Use the Level Up (+) button.</td></tr>';
+  const total=calcMaxHP();
+  const toughBonus=toughActive?level*2:0;
+  currentModal='hphistory';
+  document.getElementById('modal-title').textContent=`HP Breakdown — Max: ${total}`;
+  document.getElementById('modal-tabs').innerHTML='';
+  document.getElementById('modal-body').innerHTML=`
+    <div style="font-family:'Crimson Text',serif;font-size:13px;color:var(--ink3);margin-bottom:10px;">
+      CON modifier is applied <strong>live</strong> — changing CON recalculates all levels instantly.
+      Current CON mod: <strong style="color:var(--ink);">${fmtM(conMod)}</strong>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="border-bottom:1.5px solid var(--border);">
+        <th style="padding:4px 8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);text-align:left;">LVL</th>
+        <th style="padding:4px 8px;text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);">DIE ROLL</th>
+        <th style="padding:4px 8px;text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);">CON</th>
+        <th style="padding:4px 8px;text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);">HP</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        ${toughActive?`<tr style="border-top:0.5px solid var(--borderl);">
+          <td colspan="3" style="padding:4px 8px;font-family:'Cinzel',serif;font-size:10px;color:var(--green);">Tough feat (×${level} levels)</td>
+          <td style="padding:4px 8px;text-align:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--green);">+${toughBonus}</td>
+        </tr>`:''}
+        <tr style="border-top:1.5px solid var(--border);">
+          <td colspan="3" style="padding:5px 8px;font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--ink);">TOTAL</td>
+          <td style="padding:5px 8px;text-align:center;font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--ink);">${total}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+  document.getElementById('picker-detail').classList.remove('open');
+  document.getElementById('confirm-btn').style.display='none';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+// ════════════════════════════════════════════════════
+// RENDER ABILITIES
+// ════════════════════════════════════════════════════
+function renderAbilities(){
+  const c=document.getElementById('abilityBoxes');c.innerHTML='';
+  ABILITIES.forEach(ab=>{
+    const total=scores[ab.key];
+    const base=baseScores[ab.key];
+    const bonus=asiBonus[ab.key]||0;
+    const d=document.createElement('div');d.className='ab-box';
+    d.innerHTML=`<div class="ab-short">${ab.short}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:2px;margin:2px 0;">
+        <button onclick="adjustScore('${ab.key}',-1)"
+          style="font-family:'Cinzel',serif;font-size:14px;width:18px;height:18px;border:1px solid var(--border);
+          background:transparent;color:var(--ink3);border-radius:3px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">−</button>
+        <input class="ab-score" type="number" value="${total}" id="score_${ab.key}"
+          oninput="baseScores['${ab.key}']=Math.max(1,Math.min(30,parseInt(this.value)||1));recalcScores();updateAll();"
+          style="width:38px;text-align:center;" />
+        <button onclick="adjustScore('${ab.key}',1)"
+          style="font-family:'Cinzel',serif;font-size:14px;width:18px;height:18px;border:1px solid var(--green);
+          background:rgba(45,90,27,.1);color:var(--green);border-radius:3px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">+</button>
+      </div>
+      ${bonus?`<div style="font-family:'Cinzel',serif;font-size:8px;color:var(--gold);margin-top:1px;">base ${base} +${bonus} ASI</div>`:''}
+      <div class="ab-mod" id="mod_${ab.key}" title="Roll ${ab.name} check"
+        onclick="quickRoll(20,'${ab.name} Check',getMod(scores['${ab.key}']))">${fmtM(getMod(total))}</div>`;
+    c.appendChild(d);
+  });
+}
+
+function updateAll(){
+  recalcScores();
+  const pb=getPB(level);
+  document.getElementById('pbDisplay').textContent='+'+pb;
+  ABILITIES.forEach(ab=>{
+    const el=document.getElementById('mod_'+ab.key);
+    if(el)el.textContent=fmtM(getMod(scores[ab.key]));
+    const inp=document.getElementById('score_'+ab.key);
+    if(inp)inp.value=scores[ab.key];
+  });
+  // Keep legacy flags in sync
+  alertActive = featEffects.alert;
+  toughActive = featEffects.tough;
+
+  const initBonus = getMod(scores.dex) + (featEffects.alert ? 5 : 0);
+  document.getElementById('initDisplay').textContent = fmtM(initBonus);
+  const initBox = document.getElementById('initDisplay').closest('.clickable-stat');
+  if(initBox) initBox.setAttribute('onclick', "quickRoll(20,'Initiative',"+initBonus+")");
+
+  // Passive perception: base + Observant +5
+  const percMod = getSkillBonus('Perception');
+  const passiveBonus = featEffects.observant ? 5 : 0;
+  document.getElementById('passPerc').textContent = 10 + percMod + passiveBonus;
+  document.getElementById('percDisp').textContent = fmtM(percMod);
+
+  // Speed: base + feat bonuses
+  const baseSpeed = parseInt(document.getElementById('speed').value) || 30;
+  const totalFeatSpeed = Object.values(featSpeedBonuses).reduce((a,b)=>a+b, 0);
+  // (Speed input is manual — we just show an overlay note, don't overwrite it)
+  document.getElementById('xpNeeded').textContent=(XP_TABLE[level]||'—').toLocaleString?.()??XP_TABLE[level]??'—';
+  recalcHP();
+  calcAC();
+  renderSaves();renderSkills();
+  renderSpellSlots();
+  if(dmActive) renderDMPanel();
+}
+
+function renderSaves(){
+  const pb=getPB(level);const c=document.getElementById('savesContainer');c.innerHTML='';
+  ABILITIES.forEach(ab=>{
+    const mod=getMod(scores[ab.key]);const pro=savingProf[ab.key]||false;
+    const total=mod+(pro?pb:0);
+    const row=document.createElement('div');row.className='skill-row';
+    row.innerHTML=`<div class="prof-dot ${pro?'p1':''}" onclick="savingProf['${ab.key}']=!savingProf['${ab.key}'];updateAll();"></div>
+      <span class="sk-bonus">${fmtM(total)}</span>
+      <span class="sk-name">${ab.name}</span>`;
+    row.querySelector('.sk-name').addEventListener('click',()=>quickRoll(20,ab.name+' Save',total));
+    c.appendChild(row);
+  });
+}
+
+function renderSkills(){
+  const pb=getPB(level);
+  const c=document.getElementById('skillsContainer');
+  c.innerHTML='';
+
+  // Group skills by ability
+  const groups={str:[],dex:[],con:[],int:[],wis:[],cha:[]};
+  SKILLS.forEach(sk=>{
+    const base=getMod(scores[sk.attr]);
+    const pl=skillProf[sk.name]||0;
+    const bonus=base+(pl===1?pb:pl===2?pb*2:0);
+    groups[sk.attr].push({sk,bonus,pl});
+  });
+
+  const attrLabels={str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'};
+  const attrColors={str:'#8b1a1a',dex:'#1a5a1a',con:'#5a3a10',int:'#1a3a6a',wis:'#3a1a6a',cha:'#6a1a3a'};
+
+  ABILITIES.forEach(ab=>{
+    const items=groups[ab.key];
+    if(!items||!items.length) return;
+
+    // Section header
+    const header=document.createElement('div');
+    header.style.cssText=`display:flex;align-items:center;gap:6px;margin:6px 0 2px;padding:2px 4px;`;
+    header.innerHTML=`
+      <div style="width:3px;height:12px;border-radius:2px;background:${attrColors[ab.key]};flex-shrink:0;"></div>
+      <span style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;">${attrLabels[ab.key]}</span>
+      <span style="font-family:'Cinzel',serif;font-size:8px;color:var(--ink4);">(${fmtM(getMod(scores[ab.key]))})</span>
+      <div style="flex:1;height:0.5px;background:var(--borderl);"></div>`;
+    c.appendChild(header);
+
+    items.forEach(({sk,bonus,pl})=>{
+      const row=document.createElement('div');
+      row.className='skill-row';
+      row.style.paddingLeft='10px';
+      row.innerHTML=`<div class="prof-dot ${pl===1?'p1':pl===2?'p2':''}" onclick="cycleSkill('${sk.name}');updateAll();"></div>
+        <span class="sk-bonus">${fmtM(bonus)}</span>
+        <span class="sk-name">${sk.name}</span>`;
+      row.querySelector('.sk-name').addEventListener('click',()=>quickRoll(20,sk.name,bonus));
+      c.appendChild(row);
+    });
+  });
+}
+
+function cycleSkill(n){skillProf[n]=((skillProf[n]||0)+1)%3;}
+
+function renderSpellSlots(){
+  const classInput=document.getElementById('classLevel').value;
+  const className=classInput.replace(/\d+/,'').trim();
+  const cls=CLASSES.find(c=>c.name.toLowerCase()===className.toLowerCase());
+  const panel=document.getElementById('spellSlotsPanel');
+  const container=document.getElementById('spellSlots');
+  if(!cls||!cls.slots){panel.style.display='none';return;}
+  panel.style.display='block';container.innerHTML='';
+  cls.slots.forEach((maxSlots,i)=>{
+    if(maxSlots===0)return;
+    const col=document.createElement('div');col.className='spell-slot';
+    let pips='';
+    for(let p=0;p<maxSlots;p++){
+      pips+=`<div class="slot-pip" onclick="this.classList.toggle('used')"></div>`;
+    }
+    col.innerHTML=`<div class="ssl">${i+1}</div><div class="slot-pips">${pips}</div>`;
+    container.appendChild(col);
+  });
+}
+
+function onClassInput(val){
+  const m=val.match(/\d+/);
+  if(m){
+    level=parseInt(m[0]);
+    document.getElementById('levelDisplay').textContent=level;
+    updateAll();
+  }
+}
+
+function toggleInsp(){document.getElementById('inspBtn').classList.toggle('on');}
+function toggleDS(el,t){el.classList.toggle(t==='s'?'son':'fon');}
+
+// ════════════════════════════════════════════════════
+// MODAL SYSTEM
+// ════════════════════════════════════════════════════
+function openModal(type){
+  currentModal=type;pendingPick=null;
+  const box=document.getElementById('modal-box');
+  const title=document.getElementById('modal-title');
+  const tabs=document.getElementById('modal-tabs');
+  const body=document.getElementById('modal-body');
+  const detail=document.getElementById('picker-detail');
+  const confirmBtn=document.getElementById('confirm-btn');
+  detail.classList.remove('open');confirmBtn.style.display='none';
+  tabs.innerHTML='';
+
+  if(type==='species'){
+    title.textContent='Choose Species (2024 PHB)';
+    body.innerHTML='';
+    const grid=document.createElement('div');grid.className='picker-grid';
+    SPECIES_2024.forEach(sp=>{
+      const card=document.createElement('div');
+      card.className='picker-card'+(selectedSpecies===sp.name?' selected':'');
+      card.innerHTML=`<h3>${sp.name} ${sp.new2024?'<span style="font-size:9px;color:var(--red);font-family:Cinzel,serif;">NEW</span>':''}</h3>
+        <p style="margin-bottom:4px;">${sp.desc}</p>
+        <span class="badge">${sp.size}</span><span class="badge">Speed ${sp.speed}</span>
+        ${sp.lineages.length>1?'<span class="badge">'+sp.lineages.length+' lineages</span>':''}`;
+      card.addEventListener('click',()=>showSpeciesDetail(sp,card));
+      grid.appendChild(card);
+    });
+    body.appendChild(grid);
+  }
+  else if(type==='background'){
+    title.textContent='Choose Background (2024 PHB)';
+    body.innerHTML='';
+    const grid=document.createElement('div');grid.className='picker-grid';
+    BACKGROUNDS_2024.forEach(bg=>{
+      const card=document.createElement('div');
+      card.className='picker-card'+(selectedBackground===bg.name?' selected':'');
+      card.innerHTML=`<h3>${bg.name}</h3>
+        <p style="margin-bottom:4px;">${bg.desc}</p>
+        <span class="badge">📜 ${bg.feat}</span>
+        <span class="badge">+${bg.stats.slice(0,2).join('/')}</span>`;
+      card.addEventListener('click',()=>showBgDetail(bg,card));
+      grid.appendChild(card);
+    });
+    body.appendChild(grid);
+  }
+  else if(type==='feat'){
+    title.textContent='Add Feat (2024 PHB)';
+    const tabDefs=[{id:'origin',label:'Origin Feats'},{id:'general',label:'General Feats'},{id:'epic',label:'Epic Boons'}];
+    tabDefs.forEach((td,i)=>{
+      const btn=document.createElement('button');
+      btn.className='modal-tab'+(i===0?' active':'');
+      btn.textContent=td.label;btn.dataset.tab=td.id;
+      btn.addEventListener('click',()=>{
+        tabs.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
+        btn.classList.add('active');renderFeatTab(td.id);
+      });
+      tabs.appendChild(btn);
+    });
+    renderFeatTab('origin');
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function renderFeatTab(tabId){
+  const body=document.getElementById('modal-body');
+  const detail=document.getElementById('picker-detail');
+  const confirmBtn=document.getElementById('confirm-btn');
+  detail.classList.remove('open');confirmBtn.style.display='none';
+  body.innerHTML='';
+  const feats=FEATS_2024[tabId];
+  const grid=document.createElement('div');grid.className='picker-grid';
+  feats.forEach(feat=>{
+    const card=document.createElement('div');card.className='picker-card';
+    card.innerHTML=`<h3>${feat.name}</h3><p>${feat.desc}</p>`;
+    card.addEventListener('click',()=>{
+      grid.querySelectorAll('.picker-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      pendingPick={type:'feat',data:feat,category:tabId};
+      detail.innerHTML=`<h4>${feat.name} <span style="font-family:Crimson Text,serif;font-size:13px;font-style:italic;font-weight:400;">(${tabId})</span></h4><p>${feat.desc}</p>`;
+      detail.classList.add('open');confirmBtn.style.display='block';
+    });
+    grid.appendChild(card);
+  });
+  body.appendChild(grid);
+}
+
+function showSpeciesDetail(sp,card){
+  document.querySelectorAll('#modal-body .picker-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  pendingPick={type:'species',data:sp};
+  const detail=document.getElementById('picker-detail');
+  let lineageHtml=sp.lineages.length>1?`<p><strong>Lineages:</strong> ${sp.lineages.join(', ')}</p>`:'';
+  detail.innerHTML=`<h4>${sp.name}</h4>
+    <p>${sp.desc}</p>
+    <p><strong>Size:</strong> ${sp.size} &nbsp; <strong>Speed:</strong> ${sp.speed} ft</p>
+    ${lineageHtml}
+    <p><strong>Traits:</strong></p><ul>${sp.traits.map(t=>`<li>${t}</li>`).join('')}</ul>
+    <p style="margin-top:8px;font-style:italic;color:var(--ink3);">${sp.playstyle}</p>`;
+  detail.classList.add('open');
+  document.getElementById('confirm-btn').style.display='block';
+}
+
+function showBgDetail(bg,card){
+  document.querySelectorAll('#modal-body .picker-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  pendingPick={type:'background',data:bg,asiChoice:null};
+  window._bgAsiMode='2+1'; // '2+1' or '1+1+1'
+  window._bgAsiPicked={}; // {str:2} or {str:1,dex:1,con:1}
+
+  const detail=document.getElementById('picker-detail');
+  detail.innerHTML=buildBgDetail(bg);
+  detail.classList.add('open');
+  // Show confirm right away — ASI can be assigned now or later via the banner
+  const cb=document.getElementById('confirm-btn');
+  cb.style.display='block';
+  cb.textContent='Confirm '+bg.name+' →';
+}
+
+function buildBgDetail(bg){
+  const statKeys=bg.stats.map(s=>s.toLowerCase().slice(0,3));
+  const mode=window._bgAsiMode;
+  const picked=window._bgAsiPicked||{};
+
+  // Build ASI picker UI
+  const budget= mode==='2+1' ? 3 : 3; // total points always 3
+  const usedTotal=Object.values(picked).reduce((a,b)=>a+b,0);
+  const remaining=3-usedTotal;
+
+  let btnHtml=statKeys.map(key=>{
+    const val=picked[key]||0;
+    const score=baseScores[key]+(asiBonus[key]||0);
+    const newScore=Math.min(20,score+val);
+    const maxForKey = mode==='2+1' ? 2 : 1;
+    const canAdd=(val<maxForKey)&&(remaining>0)&&(newScore<20);
+    const canRemove=val>0;
+    return `<div style="border:1.5px solid ${val>0?'var(--gold)':'var(--borderl)'};border-radius:6px;padding:8px;text-align:center;background:${val>0?'rgba(200,146,42,.1)':'var(--panel)'};">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);">${key.toUpperCase()}</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin:2px 0;">
+        ${score}${val>0?`<span style="color:var(--gold);font-size:13px;"> +${val}</span>`:''}
+      </div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);margin-bottom:6px;">→ ${newScore} (${val>0?'+':''+(newScore-score)>=0?'+':''}${getMod(newScore)>=0?'+':''}${getMod(newScore)})</div>
+      <div style="display:flex;gap:4px;justify-content:center;">
+        <button onclick="bgAsiAdjust('${key}',-1)" ${canRemove?'':'disabled'}
+          style="font-family:'Cinzel',serif;width:24px;height:24px;border:1px solid var(--border);background:transparent;color:var(--ink3);border-radius:3px;cursor:${canRemove?'pointer':'not-allowed'};opacity:${canRemove?1:0.35};font-size:14px;padding:0;">−</button>
+        <span style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;min-width:24px;text-align:center;color:${val>0?'var(--gold)':'var(--ink3)'};">+${val}</span>
+        <button onclick="bgAsiAdjust('${key}',1)" ${canAdd?'':'disabled'}
+          style="font-family:'Cinzel',serif;width:24px;height:24px;border:1px solid ${canAdd?'var(--green)':'var(--border)'};background:${canAdd?'rgba(45,90,27,.1)':'transparent'};color:${canAdd?'var(--green)':'var(--ink3)'};border-radius:3px;cursor:${canAdd?'pointer':'not-allowed'};opacity:${canAdd?1:0.35};font-size:14px;padding:0;">+</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const modeBtn2=(mode==='2+1')?
+    `<button style="font-family:'Cinzel',serif;font-size:11px;background:var(--gold);color:white;border:1.5px solid var(--gold);border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:700;">+2 / +1</button>`:
+    `<button onclick="setBgAsiMode('2+1')" style="font-family:'Cinzel',serif;font-size:11px;background:transparent;color:var(--ink3);border:1.5px solid var(--borderl);border-radius:4px;padding:4px 10px;cursor:pointer;">+2 / +1</button>`;
+  const modeBtn3=(mode==='1+1+1')?
+    `<button style="font-family:'Cinzel',serif;font-size:11px;background:var(--gold);color:white;border:1.5px solid var(--gold);border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:700;">+1 / +1 / +1</button>`:
+    `<button onclick="setBgAsiMode('1+1+1')" style="font-family:'Cinzel',serif;font-size:11px;background:transparent;color:var(--ink3);border:1.5px solid var(--borderl);border-radius:4px;padding:4px 10px;cursor:pointer;">+1 / +1 / +1</button>`;
+
+  const budgetColor = remaining===0?'var(--green)':'var(--gold)';
+  const allDone = remaining===0;
+
+  return `
+    <h4>${bg.name}</h4>
+    <p style="margin-bottom:10px;">${bg.desc}</p>
+
+    <div style="border:1.5px solid var(--borderl);border-radius:6px;padding:10px;margin-bottom:10px;background:rgba(200,146,42,.05);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--ink3);">ABILITY SCORE INCREASE</span>
+        <div style="display:flex;gap:6px;">${modeBtn2}${modeBtn3}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">${btnHtml}</div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;text-align:center;color:${budgetColor};">
+        ${allDone
+          ? '✓ All points assigned!'
+          : `Points remaining: <strong>${remaining}</strong>`}
+      </div>
+    </div>
+
+    <ul style="font-size:13px;line-height:1.7;margin-left:1em;margin-bottom:8px;">
+      <li><strong>Origin Feat:</strong> ${bg.feat}</li>
+      <li><strong>Skills:</strong> ${bg.skills.join(', ')}</li>
+      <li><strong>Tool:</strong> ${bg.tool}</li>
+      <li><strong>Feature:</strong> ${bg.feature}</li>
+    </ul>`;
+}
+
+function bgAsiAdjust(key, delta){
+  const bg=pendingPick&&pendingPick.data;
+  if(!bg)return;
+  const mode=window._bgAsiMode;
+  const picked=window._bgAsiPicked||{};
+  const cur=picked[key]||0;
+  const usedTotal=Object.values(picked).reduce((a,b)=>a+b,0);
+  const maxForKey=mode==='2+1'?2:1;
+
+  if(delta>0){
+    if(usedTotal>=3)return;
+    if(cur>=maxForKey)return;
+    const score=baseScores[key]+(asiBonus[key]||0);
+    if(score+cur+delta>20)return;
+  } else {
+    if(cur<=0)return;
+  }
+  picked[key]=(cur+delta);
+  if(picked[key]===0)delete picked[key];
+  window._bgAsiPicked=picked;
+  pendingPick.asiChoice=picked;
+
+  // Re-render detail
+  const detail=document.getElementById('picker-detail');
+  detail.innerHTML=buildBgDetail(bg);
+
+  // Always keep confirm visible; show ASI progress in button text
+  const total=Object.values(picked).reduce((a,b)=>a+b,0);
+  const confirmBtn=document.getElementById('confirm-btn');
+  confirmBtn.style.display='block';
+  confirmBtn.textContent = total===3
+    ? 'Confirm '+bg.name+' →'
+    : 'Confirm '+bg.name+' ('+total+'/3 ASI) →';
+}
+
+function setBgAsiMode(mode){
+  window._bgAsiMode=mode;
+  window._bgAsiPicked={};
+  if(pendingPick) pendingPick.asiChoice=null;
+  document.getElementById('confirm-btn').style.display='none';
+  const detail=document.getElementById('picker-detail');
+  detail.innerHTML=buildBgDetail(pendingPick.data);
+}
+
+// Map feat names to their ASI bonuses (2024 PHB)
+const FEAT_ASI = {
+  'Actor':            {cha:1},
+  'Athlete':          {_choice:['str','dex'],amt:1},
+  'Charger':          {_choice:['str','con'],amt:1},
+  'Crossbow Expert':  {dex:1},
+  'Crusher':          {_choice:['str','con'],amt:1},
+  'Defensive Duelist':{dex:1},
+  'Dual Wielder':     {_choice:['str','dex'],amt:1},
+  'Durable':          {con:1},
+  'Elemental Adept':  {_choice:['int','wis','cha'],amt:1},
+  'Fey Touched':      {_choice:['int','wis','cha'],amt:1},
+  'Great Weapon Master':{str:1},
+  'Heavily Armored':  {str:1},
+  'Keen Mind':        {int:1},
+  'Mage Slayer':      {_choice:['str','dex','con'],amt:1},
+  'Martial Weapon Training':{_choice:['str','dex'],amt:1},
+  'Medium Armor Master':   {_choice:['str','dex'],amt:1},
+  'Observant':        {_choice:['int','wis'],amt:1},
+  'Polearm Master':   {_choice:['str','dex'],amt:1},
+  'Resilient':        {_choiceAny:true, amt:1},
+  'Sentinel':         {_choice:['str','dex','con'],amt:1},
+  'Sharpshooter':     {dex:1},
+  'Shield Master':    {str:1},
+  'Skill Expert':     {_choiceAny:true, amt:1},
+  'Skulker':          {dex:1},
+  'Slasher':          {_choice:['str','dex'],amt:1},
+  'Speedy':           {_choice:['dex','con'],amt:1},
+  'Spell Sniper':     {_choice:['int','wis','cha'],amt:1},
+  'War Caster':       {_choice:['int','wis','cha'],amt:1},
+  'Weapon Master':    {_choice:['str','dex'],amt:1},
+  // Epic Boons
+  'Epic Boon of Combat Prowess':     {_choiceAny:true,amt:1},
+  'Epic Boon of Dimensional Travel': {_choiceAny:true,amt:1},
+  'Epic Boon of Energy Resistance':  {_choiceAny:true,amt:1},
+  'Epic Boon of Fortitude':          {con:1},
+  'Epic Boon of Irresistible Offense':{_choice:['str','dex'],amt:1},
+  'Epic Boon of Luck':               {_choiceAny:true,amt:1},
+  'Epic Boon of the Night Spirit':   {_choiceAny:true,amt:1},
+  'Epic Boon of Recovery':           {con:1},
+  'Epic Boon of Skill Proficiency':  {_choiceAny:true,amt:1},
+  'Epic Boon of Speed':              {_choice:['dex','con'],amt:1},
+  'Epic Boon of Spell Recall':       {_choice:['int','wis','cha'],amt:1},
+  'Epic Boon of Truesight':          {_choiceAny:true,amt:1},
+};
+
+// ── FEAT ASI PICKER MODAL ────────────────────────────────
+// Called after feat chip is added; opens a small overlay if a choice is needed
+// ── CENTRAL FEAT AUTOMATION ─────────────────────────────
+// Called when feat is added (apply=true) or removed (apply=false)
+function applyFeatAutomation(featName, isEpic, apply){
+  const sign = apply ? 1 : -1;
+
+  switch(featName){
+    // ── ORIGIN ─────────────────────────────────────────
+    case 'Tough':
+      featEffects.tough = apply;
+      recalcHP(); updateAll();
+      if(apply) showToast('Tough: Max HP +'+(level*2)+'!');
+      break;
+
+    case 'Alert':
+      featEffects.alert = apply;
+      alertActive = apply;
+      updateAll();
+      if(apply) showToast('Alert: Initiative +'+(getMod(scores.dex)+5)+'!');
+      break;
+
+    case 'Skilled':
+      if(apply) setTimeout(()=>openSkilledPicker('Skilled', 3, false), 200);
+      else { removeFeatSkills('Skilled'); updateAll(); }
+      break;
+
+    case 'Healer':
+    case 'Lucky':
+    case 'Crafter':
+    case 'Musician':
+    case 'Tavern Brawler':
+    case 'Savage Attacker':
+    case 'Magic Initiate (Cleric)':
+    case 'Magic Initiate (Druid)':
+    case 'Magic Initiate (Wizard)':
+      if(apply){ applyFeatASI(featName); showToast(featName+' added!'); }
+      else { removeFeatASI(featName); }
+      break;
+
+    // ── GENERAL — fixed ASI feats ─────────────────────
+    case 'Actor':
+    case 'Crossbow Expert':
+    case 'Durable':
+    case 'Great Weapon Master':
+    case 'Keen Mind':
+    case 'Shield Master':
+    case 'Sharpshooter':
+    case 'Skulker':
+      if(apply){ applyFeatASI(featName); showToast(featName+': ASI applied!'); }
+      else { removeFeatASI(featName); }
+      break;
+
+    // ── GENERAL — choice ASI feats ────────────────────
+    case 'Athlete':
+    case 'Charger':
+    case 'Crusher':
+    case 'Defensive Duelist':
+    case 'Dual Wielder':
+    case 'Elemental Adept':
+    case 'Fey Touched':
+    case 'Mage Slayer':
+    case 'Martial Weapon Training':
+    case 'Polearm Master':
+    case 'Sentinel':
+    case 'Slasher':
+    case 'Spell Sniper':
+    case 'War Caster':
+    case 'Weapon Master':
+    case 'Ritual Caster':
+      if(apply){ applyFeatASI(featName); }
+      else { removeFeatASI(featName); }
+      break;
+
+    case 'Skill Expert':
+      if(apply){
+        applyFeatASI(featName); // ASI picker opens
+        setTimeout(()=>openSkilledPicker('Skill Expert', 1, true), 200);
+      } else {
+        removeFeatASI(featName);
+        removeFeatSkills('Skill Expert');
+      }
+      break;
+
+    // ── RESILIENT — save proficiency ──────────────────
+    case 'Resilient':
+      if(apply){
+        // Open ASI picker; after ASI chosen we auto-grant save prof in that ability
+        applyFeatASI(featName); // opens picker, confirmFeatAsiPick handles it
+      } else {
+        const saved = featEffects.resilientSave;
+        if(saved){ savingProf[saved]=false; featEffects.resilientSave=null; }
+        removeFeatASI(featName);
+        updateAll();
+        showToast('Resilient removed — save proficiency reverted');
+      }
+      break;
+
+    // ── OBSERVANT — +5 passive perc/investigation ─────
+    case 'Observant':
+      featEffects.observant = apply;
+      if(apply){ applyFeatASI(featName); }
+      else { removeFeatASI(featName); }
+      updateAll();
+      if(apply) showToast('Observant: +5 Passive Perception!');
+      break;
+
+    // ── SPEEDY — +10 speed ────────────────────────────
+    case 'Speedy':
+      if(apply){
+        featSpeedBonuses['Speedy'] = 10;
+        applyFeatASI(featName);
+        const spEl=document.getElementById('speed');
+        if(spEl) spEl.value=parseInt(spEl.value||30)+10;
+        showToast('Speedy: +10 Speed!');
+      } else {
+        delete featSpeedBonuses['Speedy'];
+        removeFeatASI(featName);
+        const spEl=document.getElementById('speed');
+        if(spEl) spEl.value=Math.max(0,parseInt(spEl.value||30)-10);
+      }
+      updateAll();
+      break;
+
+    // ── HEAVILY ARMORED — heavy armor proficiency ─────
+    case 'Heavily Armored':
+      featEffects.heavyArmorProf = apply;
+      if(apply){
+        applyFeatASI(featName);
+        showToast('Heavily Armored: Heavy armor training granted!');
+        // Refresh armor badges if a class is set
+        const cls=getCurrentClass();
+        if(cls){
+          if(!cls.armor.includes('Heavy')) cls.armor.push('Heavy');
+          updateArmorBadges(cls);
+        }
+      } else {
+        removeFeatASI(featName);
+        const cls=getCurrentClass();
+        if(cls){
+          cls.armor=cls.armor.filter(a=>a!=='Heavy');
+          updateArmorBadges(cls);
+        }
+      }
+      break;
+
+    // ── MEDIUM ARMOR MASTER ───────────────────────────
+    case 'Medium Armor Master':
+      featEffects.medArmorMaster = apply;
+      if(apply){ applyFeatASI(featName); showToast('Medium Armor Master: DEX cap +3 for medium armor!'); }
+      else { removeFeatASI(featName); }
+      calcAC(); // recalc AC since medium armor formula changes
+      break;
+
+    // ── EPIC BOONS ────────────────────────────────────
+    case 'Epic Boon of Fortitude':
+      featEffects.epicFort = apply;
+      if(apply){ applyFeatASI(featName,'epic'); showToast('Epic Fortitude: +40 Max HP!'); }
+      else { removeFeatASI(featName); }
+      recalcHP(); updateAll();
+      break;
+
+    case 'Epic Boon of Speed':
+      featEffects.epicSpeed = apply;
+      if(apply){
+        featSpeedBonuses['Epic Boon of Speed']=30;
+        applyFeatASI(featName,'epic');
+        const spEl=document.getElementById('speed');
+        if(spEl) spEl.value=parseInt(spEl.value||30)+30;
+        showToast('Epic Speed: +30 Speed!');
+      } else {
+        delete featSpeedBonuses['Epic Boon of Speed'];
+        removeFeatASI(featName);
+        const spEl=document.getElementById('speed');
+        if(spEl) spEl.value=Math.max(0,parseInt(spEl.value||30)-30);
+      }
+      updateAll();
+      break;
+
+    case 'Epic Boon of Skill Proficiency':
+      featEffects.epicSkill = apply;
+      if(apply){
+        // Grant proficiency in ALL skills
+        SKILLS.forEach(sk=>{ if(!skillProf[sk.name]) skillProf[sk.name]=1; });
+        applyFeatASI(featName,'epic');
+        showToast('Epic Skill: Proficiency in ALL skills!');
+      } else {
+        // Remove only the ones this boon granted (not background/class profs)
+        const prev = window._epicSkillGrants||[];
+        prev.forEach(sk=>{ if(skillProf[sk]===1) delete skillProf[sk]; });
+        removeFeatASI(featName);
+      }
+      if(apply){
+        window._epicSkillGrants = SKILLS.filter(sk=>!skillProf[sk.name]||skillProf[sk.name]===0).map(sk=>sk.name);
+        SKILLS.forEach(sk=>{ skillProf[sk.name]=skillProf[sk.name]||1; });
+      }
+      updateAll();
+      break;
+
+    default:
+      // All other epic boons — just ASI (with cap 30 for epic)
+      if(apply){
+        if(isEpic) applyFeatASI(featName,'epic');
+        else applyFeatASI(featName);
+        showToast(featName+' added!');
+      } else {
+        removeFeatASI(featName);
+      }
+      break;
+  }
+}
+
+function removeFeatSkills(featName){
+  const granted=(window._featSkillGrants||{})[featName]||[];
+  granted.forEach(sk=>{if(skillProf[sk]===1)delete skillProf[sk];});
+  delete (window._featSkillGrants||{})[featName];
+  const exp=(window._featExpertise||{})[featName];
+  if(exp){ delete expertiseSkills[exp]; if(skillProf[exp]===2) delete skillProf[exp]; }
+}
+
+function applyFeatASI(featName, epicMode){
+  const asi=FEAT_ASI[featName];
+  if(!asi)return;
+  const cap = epicMode==='epic' ? 30 : 20;
+
+  // Fixed bonus — no choice needed, apply immediately
+  if(!asi._choiceAny&&!asi._choice){
+    Object.entries(asi).forEach(([k,v])=>{
+      if(['str','dex','con','int','wis','cha'].includes(k)) asiBonus[k]=(asiBonus[k]||0)+v;
+    });
+    recalcScores(cap);renderAbilities();recalcHP();updateAll();
+    const applied=Object.entries(asi)
+      .filter(([k])=>['str','dex','con','int','wis','cha'].includes(k))
+      .map(([k,v])=>k.toUpperCase()+' +'+v).join(', ');
+    showToast(featName+': '+applied);
+    return;
+  }
+
+  // Choice needed — open ASI picker modal
+  const choices=asi._choiceAny
+    ?['str','dex','con','int','wis','cha']
+    :asi._choice;
+  openFeatAsiPicker(featName, choices, asi.amt, epicMode==='epic');
+}
+
+function openFeatAsiPicker(featName, choices, amt, isEpic){
+  const attrLabels={str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'};
+  const attrColors={str:'#8b1a1a',dex:'#1a5a1a',con:'#7a5010',int:'#1a3a6a',wis:'#3a1a6a',cha:'#6a1a3a'};
+  const cap = isEpic ? 30 : 20;
+  const isResilient = featName==='Resilient';
+
+  const btnHtml=choices.map(key=>{
+    const cur=scores[key];
+    const newVal=Math.min(cap,cur+amt);
+    const maxed=cur>=cap;
+    const color=attrColors[key];
+    const saveProf = isResilient ? (savingProf[key]?' (save already proficient)':'') : '';
+    return `<button onclick="confirmFeatAsiPick('${featName}','${key}',${amt},${isEpic})"
+      ${maxed?'disabled':''}
+      style="font-family:'Cinzel',serif;border:2px solid ${maxed?'var(--borderl)':color};
+      border-radius:8px;padding:10px 6px;cursor:${maxed?'not-allowed':'pointer'};
+      background:${maxed?'transparent':'rgba(255,255,255,0.5)'};opacity:${maxed?0.4:1};
+      transition:all .15s;text-align:center;width:100%;"
+      onmouseover="if(!${maxed})this.style.background='rgba(0,0,0,0.06)'"
+      onmouseout="this.style.background='${maxed?'transparent':'rgba(255,255,255,0.5)'}'">
+      <div style="font-size:11px;letter-spacing:.1em;color:${maxed?'var(--ink3)':color};margin-bottom:4px;">${key.toUpperCase()}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:2px;">${attrLabels[key]}</div>
+      <div style="font-size:18px;font-weight:700;color:var(--ink);">${cur}</div>
+      <div style="font-size:12px;color:${maxed?'var(--ink3)':color};margin-top:2px;">
+        ${maxed?'(max '+cap+')':'→ '+newVal+' ('+fmtM(getMod(newVal))+')'}
+      </div>
+      ${isResilient?`<div style="font-size:10px;color:var(--gold);margin-top:3px;">+ Save Prof${saveProf}</div>`:''}
+    </button>`;
+  }).join('');
+
+  let overlay=document.getElementById('asi-pick-overlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='asi-pick-overlay';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:700;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML=`
+    <div style="background:var(--parchment);border:3px solid var(--border);border-radius:8px;max-width:500px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative;">
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;">${featName}</div>
+      <div style="font-family:'Crimson Text',serif;font-size:14px;color:var(--ink3);margin-bottom:1rem;">
+        Choose one ability to increase by +${amt}:
+        ${isEpic?`<span style="color:var(--gold);font-weight:700;"> (Epic Boon — cap is 30)</span>`:''}
+        ${isResilient?`<span style="color:var(--blue);"> You also gain <strong>saving throw proficiency</strong> in the chosen ability.</span>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(${Math.min(choices.length,3)},1fr);gap:8px;margin-bottom:1rem;">
+        ${btnHtml}
+      </div>
+      <div style="font-size:12px;color:var(--ink3);font-family:'Crimson Text',serif;text-align:center;">
+        ${choices.length<6?'Only abilities listed by this feat are available.':'Any ability can be increased.'}
+        ${isEpic?'Scores can exceed 20 with Epic Boons.':''}
+      </div>
+    </div>`;
+  overlay.style.display='flex';
+}
+
+function confirmFeatAsiPick(featName, key, amt, isEpic){
+  const cap = isEpic ? 30 : 20;
+  asiBonus[key]=(asiBonus[key]||0)+amt;
+  recalcScores(cap);renderAbilities();recalcHP();updateAll();
+  if(!window._featAsiChoices) window._featAsiChoices={};
+  window._featAsiChoices[featName]=window._featAsiChoices[featName]||[];
+  window._featAsiChoices[featName].push({key,amt,isEpic});
+  const overlay=document.getElementById('asi-pick-overlay');
+  if(overlay) overlay.style.display='none';
+
+  // Special post-pick effects
+  if(featName==='Resilient'){
+    savingProf[key]=true;
+    featEffects.resilientSave=key;
+    updateAll();
+    showToast('Resilient: +1 '+key.toUpperCase()+' & saving throw proficiency!');
+  } else {
+    showToast(featName+': +'+amt+' '+key.toUpperCase()+' → now '+scores[key]);
+  }
+}
+
+// ── SKILLED / SKILL EXPERT PICKER ───────────────────────
+// ── SKILLED / SKILL EXPERT PICKER ─────────────────────────
+// All state lives in window._sk* — no closures, no inner functions
+function openSkilledPicker(featName, count, withExpertise){
+  if(!window._featSkillGrants) window._featSkillGrants={};
+  if(!window._featExpertise) window._featExpertise={};
+  // Always store context
+  window._sk_feat = featName;
+  window._sk_count = count;
+  window._sk_expert = withExpertise;
+  // Only reset chosen list on fresh open (not during renderSkilledPicker calls)
+  if(!window._sk_rerender){
+    window._sk_chosen = [...(window._featSkillGrants[featName]||[])];
+  }
+  window._sk_rerender = false;
+  renderSkilledPicker();
+}
+
+function renderSkilledPicker(){
+  const featName = window._sk_feat;
+  const count    = window._sk_count;
+  const chosen   = window._sk_chosen || [];
+  const withExpertise = window._sk_expert;
+  const remaining = count - chosen.length;
+
+  const attrColors={str:'#8b1a1a',dex:'#1a5a1a',con:'#7a5010',int:'#1a3a6a',wis:'#3a1a6a',cha:'#6a1a3a'};
+  const attrLabels={str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'};
+  const groups={str:[],dex:[],con:[],int:[],wis:[],cha:[]};
+  SKILLS.forEach(sk=>groups[sk.attr].push(sk));
+
+  let groupHtml='';
+  ABILITIES.forEach(ab=>{
+    const sks=groups[ab.key];
+    if(!sks.length) return;
+    groupHtml+=`<div style="margin-bottom:8px;">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:${attrColors[ab.key]};margin-bottom:4px;">${attrLabels[ab.key].toUpperCase()}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">`;
+    sks.forEach(sk=>{
+      const sel = chosen.includes(sk.name);
+      const already = !!skillProf[sk.name] && !sel;
+      const canAdd = !sel && remaining>0;
+      const canRemove = sel;
+      groupHtml+=`<button onclick="skilledToggle('${sk.name}')"
+        style="font-family:'Cinzel',serif;font-size:11px;padding:4px 10px;border-radius:4px;
+        cursor:${(canAdd||canRemove)?'pointer':'not-allowed'};
+        border:1.5px solid ${sel?attrColors[ab.key]:already?'var(--borderl)':'var(--border)'};
+        background:${sel?'rgba(200,146,42,.2)':already?'rgba(0,0,0,.04)':'transparent'};
+        color:${sel?'var(--ink)':already?'var(--ink4)':'var(--ink2)'};
+        opacity:${(!canAdd&&!canRemove)?0.5:1};font-weight:${sel?700:400};"
+        title="${already?'Already proficient — wastes the slot':''}">
+        ${sel?'✓ ':already?'⚠ ':''}${sk.name}
+      </button>`;
+    });
+    groupHtml+='</div></div>';
+  });
+
+  const done = chosen.length===count;
+  const overlay = getOrCreateOverlay('skill-pick-overlay');
+  overlay.innerHTML=`
+    <div style="background:var(--parchment);border:3px solid var(--border);border-radius:8px;max-width:560px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:85vh;overflow-y:auto;">
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;">${featName}</div>
+      <div style="font-family:'Crimson Text',serif;font-size:14px;color:var(--ink3);margin-bottom:1rem;">
+        Choose <strong>${count}</strong> skill${count>1?'s':''} to gain proficiency in.
+        ${remaining>0?`<span style="color:var(--gold);font-weight:700;"> ${remaining} remaining.</span>`:'<span style="color:var(--green);font-weight:700;"> ✓ All chosen!</span>'}
+        <br><span style="font-size:12px;">⚠ = already proficient (picking it wastes the slot).</span>
+      </div>
+      <div style="margin-bottom:1rem;">${groupHtml}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <button onclick="document.getElementById('skill-pick-overlay').style.display='none'"
+          style="font-family:'Cinzel',serif;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--ink3);padding:5px 12px;border-radius:4px;cursor:pointer;">
+          Skip</button>
+        ${done?`<button onclick="confirmSkilledPick()"
+          style="font-family:'Cinzel',serif;font-size:12px;background:var(--red);color:white;border:none;border-radius:5px;padding:8px 20px;cursor:pointer;">
+          Confirm ${count} Skill${count>1?'s':''} →</button>`:''}
+      </div>
+    </div>`;
+  overlay.style.display='flex';
+}
+
+function skilledToggle(skillName){
+  const count = window._sk_count||3;
+  const chosen = window._sk_chosen||[];
+  const idx = chosen.indexOf(skillName);
+  if(idx>=0){
+    chosen.splice(idx,1);
+  } else {
+    if(chosen.length>=count) return;
+    chosen.push(skillName);
+  }
+  window._sk_chosen = chosen;
+  window._sk_rerender = true;
+  renderSkilledPicker();
+}
+
+function confirmSkilledPick(){
+  const featName = window._sk_feat;
+  const withExpertise = window._sk_expert||false;
+  const chosen = window._sk_chosen||[];
+  if(!window._featSkillGrants) window._featSkillGrants={};
+  const prev = window._featSkillGrants[featName]||[];
+  prev.forEach(sk=>{if(skillProf[sk]===1)delete skillProf[sk];});
+  chosen.forEach(sk=>{skillProf[sk]=1;});
+  window._featSkillGrants[featName]=chosen;
+  const overlay=document.getElementById('skill-pick-overlay');
+  if(overlay) overlay.style.display='none';
+  window._sk_rerender=false;
+  updateAll();
+  showToast(featName+': '+chosen.join(', ')+' added!');
+  if(withExpertise) setTimeout(()=>openExpertisePicker(featName, chosen), 200);
+}
+
+function openExpertisePicker(featName, newSkills){
+  // Pick 1 skill for expertise (must already be proficient)
+  const eligible=SKILLS.filter(sk=>skillProf[sk.name]).map(sk=>sk.name);
+  const attrColors={str:'#8b1a1a',dex:'#1a5a1a',con:'#7a5010',int:'#1a3a6a',wis:'#3a1a6a',cha:'#6a1a3a'};
+
+  const overlay=getOrCreateOverlay('skill-pick-overlay');
+  const btnHtml=eligible.map(sk=>{
+    const skObj=SKILLS.find(s=>s.name===sk);
+    const col=skObj?attrColors[skObj.attr]:'var(--border)';
+    return `<button onclick="confirmExpertise('${sk}','${featName}')"
+      style="font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;border-radius:4px;cursor:pointer;
+      border:1.5px solid ${col};background:rgba(0,0,0,.04);color:var(--ink2);transition:all .15s;"
+      onmouseover="this.style.background='rgba(0,0,0,.1)'" onmouseout="this.style.background='rgba(0,0,0,.04)'">
+      ${sk}</button>`;
+  }).join('');
+
+  overlay.innerHTML=`
+    <div style="background:var(--parchment);border:3px solid var(--border);border-radius:8px;max-width:480px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6);">
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;">Skill Expert — Expertise</div>
+      <div style="font-family:'Crimson Text',serif;font-size:14px;color:var(--ink3);margin-bottom:1rem;">
+        Choose 1 skill to gain <strong>Expertise</strong> in (double proficiency bonus):
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;">${btnHtml||'<p style="color:var(--ink3);font-size:13px;">No proficient skills yet.</p>'}</div>
+      <button onclick="document.getElementById('skill-pick-overlay').style.display='none'"
+        style="font-family:'Cinzel',serif;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--ink3);padding:5px 12px;border-radius:4px;cursor:pointer;">
+        Skip for now</button>
+    </div>`;
+  overlay.style.display='flex';
+}
+
+function confirmExpertise(skillName, featName){
+  if(!window._featExpertise) window._featExpertise={};
+  expertiseSkills[skillName]=true;
+  window._featExpertise[featName]=skillName;
+  skillProf[skillName]=2; // expertise = level 2
+  const overlay=document.getElementById('skill-pick-overlay');
+  if(overlay) overlay.style.display='none';
+  updateAll();
+  showToast('Expertise granted: '+skillName+' (double PB)');
+}
+
+function getOrCreateOverlay(id){
+  let overlay=document.getElementById(id);
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id=id;
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:700;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    document.body.appendChild(overlay);
+  }
+  return overlay;
+}
+
+function removeFeatASI(featName){
+  const asi=FEAT_ASI[featName];
+  if(!asi)return;
+  if(!asi._choiceAny&&!asi._choice){
+    // Fixed — reverse automatically
+    Object.entries(asi).forEach(([k,v])=>{
+      if(['str','dex','con','int','wis','cha'].includes(k)){
+        asiBonus[k]=Math.max(0,(asiBonus[k]||0)-v);
+      }
+    });
+    recalcScores();renderAbilities();recalcHP();updateAll();
+  } else {
+    // Choice-based — reverse using stored choices
+    const stored=(window._featAsiChoices||{})[featName];
+    if(stored&&stored.length){
+      stored.forEach(({key,amt})=>{
+        asiBonus[key]=Math.max(0,(asiBonus[key]||0)-amt);
+      });
+      delete window._featAsiChoices[featName];
+      recalcScores();renderAbilities();recalcHP();updateAll();
+      showToast(featName+' removed — ASI reversed');
+    } else {
+      showToast('Note: ASI for '+featName+' was not tracked — adjust scores manually if needed.');
+    }
+  }
+}
+
+function confirmPick(){
+  if(!pendingPick)return;
+
+  if(currentModal==='levelup'){
+    confirmLevelUp();return;
+  }
+
+  if(pendingPick.type==='class'){
+    applyClassPick(pendingPick.data, window._pickerLevel||1);
+    closeModal();return;
+  }
+
+  if(pendingPick.type==='species'){
+    selectedSpecies=pendingPick.data.name;
+    document.getElementById('species').value=pendingPick.data.name;
+    document.getElementById('speciesTraitsText').value=pendingPick.data.traits.join('\n');
+    updateTraitsBanner();
+    showToast('Species set: '+pendingPick.data.name);
+  }
+  else if(pendingPick.type==='background'){
+    const bg=pendingPick.data;
+    const asiPicked=pendingPick.asiChoice||{};
+
+    // Remove previous background ASI if re-picking
+    if(window._prevBgAsi){
+      Object.entries(window._prevBgAsi).forEach(([k,v])=>{
+        asiBonus[k]=Math.max(0,(asiBonus[k]||0)-v);
+      });
+    }
+    // Apply new ASI bonuses
+    Object.entries(asiPicked).forEach(([k,v])=>{
+      asiBonus[k]=(asiBonus[k]||0)+v;
+    });
+    window._prevBgAsi=asiPicked;
+    recalcScores();
+    renderAbilities();
+    recalcHP();
+
+    selectedBackground=bg.name;
+    document.getElementById('background').value=bg.name;
+    document.getElementById('profText').value=
+      `Skills: ${bg.skills.join(', ')}\nTool: ${bg.tool}\nLanguages: Common + two of your choice`;
+
+    // Describe the chosen ASI
+    const asiDesc=Object.entries(asiPicked).map(([k,v])=>k.toUpperCase()+' +'+v).join(', ');
+    document.getElementById('bgFeatureText').value=
+      `Origin Feat: ${bg.feat}\nASI Applied: ${asiDesc||'none'}\n\nFeature: ${bg.feature}`;
+
+    // Remove previous background's origin feat effect
+    if(window._prevBgFeat && window._prevBgFeat !== bg.feat){
+      applyFeatAutomation(window._prevBgFeat, false, false); // remove old feat effect
+      // remove old feat chip
+      const oldChip = document.querySelector(`#featsList .feat-chip[data-fname="${window._prevBgFeat}"]`);
+      if(oldChip) oldChip.remove();
+    }
+
+    // Auto-apply background skill proficiencies
+    if(window._prevBgSkills){
+      window._prevBgSkills.forEach(sk=>{
+        // Only remove if it was background-granted (not class or feat granted)
+        if(skillProf[sk]===1 && !(window._prevClassSkills||[]).includes(sk)) delete skillProf[sk];
+      });
+    }
+    // Always apply background skills — overwrite 0/undefined, don't overwrite expertise (2)
+    bg.skills.forEach(sk=>{ if(skillProf[sk]!==2) skillProf[sk]=1; });
+    window._prevBgSkills=bg.skills;
+    window._prevBgFeat=bg.feat;
+
+    // Apply origin feat via the unified automation system
+    addFeatChip(bg.feat,'origin');
+    applyFeatAutomation(bg.feat, false, true); // apply=true, not epic
+    updateTraitsBanner();
+    updateAll(); // ensure skills panel refreshes immediately
+
+    // If origin feat needs a skill choice, open picker after modal closes
+    if(bg.feat==='Skilled'||bg.feat==='Skill Expert'){
+      setTimeout(()=>openSkilledPicker(bg.feat, bg.feat==='Skilled'?3:1, bg.feat==='Skill Expert'), 200);
+    }
+
+    showToast('Background set: '+bg.name+' | Skills: '+bg.skills.join(', ')+' | ASI: '+asiDesc);
+  }
+  else if(pendingPick.type==='feat'){
+    const featName=pendingPick.data.name;
+    const isEpic=pendingPick.category==='epic';
+    addFeatChip(featName,pendingPick.category);
+    applyFeatAutomation(featName, isEpic, true);
+  }
+  closeModal();
+}
+
+function addFeatChip(name,category){
+  const list=document.getElementById('featsList');
+  const existing=[...list.querySelectorAll('.feat-chip')].map(c=>c.dataset.fname||c.textContent);
+  if(existing.includes(name))return;
+  const chip=document.createElement('span');
+  chip.className=`feat-chip ${category}`;
+  const feat=Object.values(FEATS_2024).flat().find(f=>f.name===name);
+  chip.textContent=name;chip.title=(feat?feat.desc:'')+'\n(click to remove)';
+  chip.dataset.fname=name;
+  chip.addEventListener('click',()=>{
+    if(confirm(`Remove feat: ${name}?`)){
+      const isEpic = chip.classList.contains('epic');
+      applyFeatAutomation(name, isEpic, false); // false = remove
+      chip.remove();
+    }
+  });
+  list.appendChild(chip);
+}
+
+function updateTraitsBanner(){
+  const banner=document.getElementById('traitsBanner');banner.innerHTML='';
+  if(selectedSpecies){
+    const tag=document.createElement('div');tag.className='trait-tag';
+    tag.innerHTML=`Species: <span>${selectedSpecies}</span>`;
+    banner.appendChild(tag);
+  }
+  if(selectedBackground){
+    const tag=document.createElement('div');tag.className='trait-tag';
+    tag.innerHTML=`Background: <span>${selectedBackground}</span>`;
+    banner.appendChild(tag);
+    const bg=BACKGROUNDS_2024.find(b=>b.name===selectedBackground);
+    if(bg){
+      const ft=document.createElement('div');ft.className='trait-tag';
+      ft.innerHTML=`Origin Feat: <span>${bg.feat}</span>`;
+      banner.appendChild(ft);
+      const ab=document.createElement('div');ab.className='trait-tag';
+      ab.innerHTML=`ASI: <span>${bg.stats.join(' / ')}</span>`;
+      banner.appendChild(ab);
+    }
+  }
+}
+
+// Extra class flavour data for the picker
+const CLASS_INFO = {
+  Barbarian: {icon:'⚔️', role:'Melee Striker',    color:'#8b1a1a', desc:'Primal warrior who channels rage into devastating attacks. Best HP in the game.'},
+  Bard:      {icon:'🎵', role:'Support / Face',    color:'#6a1a6a', desc:'Magical performer who inspires allies, controls crowds, and knows a bit of everything.'},
+  Cleric:    {icon:'✝️', role:'Healer / Support',  color:'#1a3a6a', desc:'Divine conduit who channels godly power to heal, protect, and smite foes.'},
+  Druid:     {icon:'🌿', role:'Controller / Heal', color:'#2d5a1b', desc:'Nature shaman who transforms into beasts and commands the elements.'},
+  Fighter:   {icon:'🛡️', role:'Melee / Ranged',   color:'#5a3a10', desc:'Master of weapons and armour. Most attacks per round at high levels.'},
+  Monk:      {icon:'👊', role:'Melee Skirmisher',  color:'#1a5a5a', desc:'Unarmed martial artist who harnesses Ki energy for supernatural feats.'},
+  Paladin:   {icon:'⚜️', role:'Melee / Support',  color:'#8b7a1a', desc:'Holy warrior who smites evil and protects allies with auras and healing.'},
+  Ranger:    {icon:'🏹', role:'Ranged / Scout',    color:'#3a5a1a', desc:'Wilderness hunter adept at tracking, archery, and fighting favoured enemies.'},
+  Rogue:     {icon:'🗡️', role:'Striker / Skill',  color:'#2a2a4a', desc:'Cunning trickster who deals massive Sneak Attack damage and excels at skills.'},
+  Sorcerer:  {icon:'✨', role:'Arcane Blaster',    color:'#6a1a3a', desc:'Born spellcaster with innate magic. Fewer spells but powerful Metamagic.'},
+  Warlock:   {icon:'👁️', role:'Arcane Controller', color:'#3a1a5a', desc:'Pact-bound caster who regains spell slots on short rests. Eldritch Blast scales.'},
+  Wizard:    {icon:'📚', role:'Arcane Utility',    color:'#1a3a5a', desc:'Scholar of magic with the widest spell list and powerful ritual casting.'},
+};
+
+function openClassPicker(){
+  currentModal='class';
+  pendingPick=null;
+  const title=document.getElementById('modal-title');
+  const tabs=document.getElementById('modal-tabs');
+  const body=document.getElementById('modal-body');
+  const detail=document.getElementById('picker-detail');
+  const confirmBtn=document.getElementById('confirm-btn');
+
+  title.textContent='Choose Class (2024 PHB)';
+  tabs.innerHTML='';
+  detail.classList.remove('open');
+  confirmBtn.style.display='none';
+  body.innerHTML='';
+
+  // Level selector at top
+  const levelRow=document.createElement('div');
+  levelRow.style.cssText='display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 12px;background:var(--panel);border:1.5px solid var(--borderl);border-radius:6px;flex-wrap:wrap;';
+  levelRow.innerHTML=`
+    <span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;color:var(--ink3);white-space:nowrap;">STARTING LEVEL:</span>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;" id="lvl-btns">
+      ${Array.from({length:20},(_,i)=>`
+        <button onclick="selectLevel(${i+1},this)"
+          style="font-family:'Cinzel',serif;font-size:11px;font-weight:600;width:28px;height:28px;
+          border:1.5px solid var(--borderl);border-radius:4px;cursor:pointer;
+          background:${i===0?'var(--gold)':'transparent'};
+          color:${i===0?'white':'var(--ink3)'};transition:all .15s;">${i+1}</button>`).join('')}
+    </div>`;
+  body.appendChild(levelRow);
+  window._pickerLevel=1;
+
+  // Class cards grid
+  const grid=document.createElement('div');
+  grid.className='picker-grid';
+  grid.style.gridTemplateColumns='repeat(auto-fill,minmax(185px,1fr))';
+
+  CLASSES.forEach(cls=>{
+    const info=CLASS_INFO[cls.name]||{icon:'⚔️',role:'Adventurer',color:'var(--border)',desc:''};
+    const card=document.createElement('div');
+    card.className='picker-card';
+    card.dataset.cls=cls.name;
+    card.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:22px;line-height:1;">${info.icon}</span>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ink);">${cls.name}</div>
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.06em;color:var(--ink3);">${info.role}</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--ink3);line-height:1.4;margin-bottom:6px;">${info.desc}</p>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <span class="badge" style="background:rgba(0,0,0,.06);border-color:var(--borderl);color:var(--ink2);">Hit Die ${cls.hd}</span>
+        <span class="badge" style="background:rgba(0,0,0,.06);border-color:var(--borderl);color:var(--ink2);">Saves: ${cls.sp}</span>
+        ${cls.slots?'<span class="badge" style="background:rgba(26,58,106,.1);border-color:#1a3a6a;color:#1a3a6a;">Spellcaster</span>':''}
+      </div>`;
+    card.addEventListener('click',()=>{
+      grid.querySelectorAll('.picker-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      pendingPick={type:'class',data:cls};
+      const d=document.getElementById('picker-detail');
+      d.innerHTML=`
+        <h4>${info.icon} ${cls.name}</h4>
+        <p>${info.desc}</p>
+        <ul style="margin-top:6px;">
+          <li><strong>Hit Die:</strong> ${cls.hd} &nbsp;|&nbsp; <strong>HP at Lv 1:</strong> ${cls.hd.replace('d','')} + CON mod</li>
+          <li><strong>Primary:</strong> ${cls.sp}</li>
+          <li><strong>Saving Throws:</strong> ${cls.saves.map(s=>s.toUpperCase()).join(', ')}</li>
+          <li><strong>Spellcasting:</strong> ${cls.slots?'Yes':'No'}</li>
+        </ul>
+        <p style="margin-top:8px;font-size:12px;color:var(--ink3);">Starting at level <strong id="detail-level">${window._pickerLevel}</strong> — HP uses average rolls.</p>`;
+      d.classList.add('open');
+      confirmBtn.style.display='block';
+      confirmBtn.textContent='Confirm: '+cls.name+' Lv '+window._pickerLevel+' →';
+    });
+    grid.appendChild(card);
+  });
+  body.appendChild(grid);
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function selectLevel(lvl,btn){
+  window._pickerLevel=lvl;
+  document.querySelectorAll('#lvl-btns button').forEach(b=>{
+    b.style.background='transparent';b.style.color='var(--ink3)';
+    b.style.borderColor='var(--borderl)';
+  });
+  btn.style.background='var(--gold)';btn.style.color='white';btn.style.borderColor='var(--gold)';
+  const dl=document.getElementById('detail-level');
+  if(dl) dl.textContent=lvl;
+  const confirmBtn=document.getElementById('confirm-btn');
+  if(pendingPick&&pendingPick.type==='class'){
+    confirmBtn.textContent='Confirm: '+pendingPick.data.name+' Lv '+lvl+' →';
+  }
+}
+
+function applyClassPick(cls,lvl){
+  level=lvl;
+  document.getElementById('classLevel').value=cls.name+' '+level;
+  document.getElementById('levelDisplay').textContent=level;
+  document.getElementById('hitDice').value=level+cls.hd;
+  document.getElementById('xpNeeded').textContent=(XP_TABLE[level]||'—').toLocaleString?.()??XP_TABLE[level];
+  hpRolls=[];
+  const hd=parseInt(cls.hd.replace('d',''));
+  for(let i=0;i<level;i++){
+    hpRolls.push({roll: i===0 ? hd : Math.floor(hd/2)+1});
+  }
+  Object.keys(savingProf).forEach(k=>{savingProf[k]=false;});
+  cls.saves.forEach(s=>{savingProf[s]=true;});
+
+  // Remove previous class skill profs
+  if(window._prevClassSkills){
+    window._prevClassSkills.forEach(sk=>{if(skillProf[sk]===1)delete skillProf[sk];});
+  }
+  window._prevClassSkills=[];
+
+  // Update armor training display
+  updateArmorBadges(cls);
+
+  recalcHP();
+  document.getElementById('hpCurrent').value=calcMaxHP();
+  updateAll();
+  showToast(cls.name+' '+level+' set! Now choose your class skills →');
+
+  // Open class skill picker after short delay (modal just closed)
+  setTimeout(()=>openClassSkillPicker(cls), 200);
+}
+
+function updateArmorBadges(cls){
+  const container=document.getElementById('armorTrainingBadges');
+  if(!container)return;
+  container.innerHTML='';
+  const armorColors={'Light':'#3a5a1a','Medium':'#5a3a10','Heavy':'#3a1a1a','Shields':'#1a3a5a'};
+  const weaponColor='#5a4a1a';
+
+  if(!cls.armor||cls.armor.length===0){
+    const nb=document.createElement('span');
+    nb.style.cssText='font-family:Cinzel,serif;font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid var(--borderl);color:var(--ink3);';
+    nb.textContent='No armor';
+    container.appendChild(nb);
+  } else {
+    cls.armor.forEach(a=>{
+      const badge=document.createElement('span');
+      const col=armorColors[a]||'var(--border)';
+      badge.style.cssText=`font-family:'Cinzel',serif;font-size:10px;padding:3px 9px;border-radius:3px;border:1.5px solid ${col};color:${col};background:${col}18;font-weight:600;`;
+      badge.textContent=a;
+      container.appendChild(badge);
+    });
+  }
+  // Weapons
+  if(cls.weapons&&cls.weapons.length){
+    const sep=document.createElement('div');
+    sep.style.cssText='width:100%;height:0;margin:2px 0;';
+    container.appendChild(sep);
+    cls.weapons.forEach(w=>{
+      const badge=document.createElement('span');
+      badge.style.cssText=`font-family:'Cinzel',serif;font-size:10px;padding:3px 9px;border-radius:3px;border:1px solid ${weaponColor};color:${weaponColor};background:${weaponColor}12;`;
+      badge.textContent=w;
+      container.appendChild(badge);
+    });
+  }
+  // Shield training check
+  const hasShield=cls.armor&&cls.armor.includes('Shields');
+  const shieldCb=document.getElementById('shieldEquipped');
+  if(shieldCb&&!hasShield){
+    shieldCb.checked=false;
+    updateShieldAC();
+  }
+  const shieldNote=document.getElementById('shieldAcNote');
+  if(shieldNote) shieldNote.textContent=hasShield?'✓ Shield trained':'✗ No shield training';
+}
+
+// ── AC STATE ────────────────────────────────────────────
+window._ac = {
+  mode: 'unarmored',   // unarmored | light | medium | heavy | special
+  armorBase: 0,        // base AC of the armor piece
+  armorName: '',       // e.g. "Leather", "Chain Mail"
+  shield: false,
+  shieldBonus: 2,
+  otherBonus: 0,       // magic items, spells, etc.
+};
+
+function adjustScore(key, delta){
+  const hasEpic = Object.values(window._featAsiChoices||{}).flat().some(c=>c.isEpic);
+  const cap = hasEpic ? 30 : 20;
+  const cur = baseScores[key]||8;
+  const newVal = Math.max(1, Math.min(cap, cur + delta));
+  baseScores[key] = newVal;
+  recalcScores();
+  updateAll();
+}
+
+function calcAC(){
+  const a = window._ac;
+  const dex = getMod(scores.dex);
+  const con = getMod(scores.con);
+  const wis = getMod(scores.wis);
+  const cls = getCurrentClass();
+  const clsName = cls ? cls.name : '';
+  let base = 0;
+  let formula = '';
+
+  switch(a.mode){
+    case 'unarmored':
+      // Barbarian: 10+DEX+CON, Monk: 10+DEX+WIS, others: 10+DEX
+      if(clsName==='Barbarian'){
+        base = 10 + dex + con;
+        formula = `10 + DEX(${fmtM(dex)}) + CON(${fmtM(con)})`;
+      } else if(clsName==='Monk'){
+        base = 10 + dex + wis;
+        formula = `10 + DEX(${fmtM(dex)}) + WIS(${fmtM(wis)})`;
+      } else {
+        base = 10 + dex;
+        formula = `10 + DEX(${fmtM(dex)})`;
+      }
+      break;
+    case 'light':
+      base = (a.armorBase||11) + dex;
+      formula = `${a.armorName||'Light'} (${a.armorBase||11}) + DEX(${fmtM(dex)})`;
+      break;
+    case 'medium':
+      const dexCap = featEffects.medArmorMaster ? 3 : 2;
+      const dexMed = Math.min(dex, dexCap);
+      base = (a.armorBase||13) + dexMed;
+      formula = `${a.armorName||'Medium'} (${a.armorBase||13}) + DEX(${fmtM(dexMed)}, max +${dexCap})`;
+      break;
+    case 'heavy':
+      base = a.armorBase||16;
+      formula = `${a.armorName||'Heavy'} (${a.armorBase||16}), no DEX`;
+      break;
+    case 'special':
+      base = (a.armorBase||13) + dex;
+      formula = `${a.armorName||'Special'} (${a.armorBase||13}) + DEX(${fmtM(dex)})`;
+      break;
+  }
+
+  const shieldVal = a.shield ? a.shieldBonus : 0;
+  const total = base + shieldVal + (a.otherBonus||0);
+  let fullFormula = formula;
+  if(a.shield) fullFormula += ` + Shield(+${shieldVal})`;
+  if(a.otherBonus) fullFormula += ` + Other(${fmtM(a.otherBonus)})`;
+  fullFormula += ` = ${total}`;
+
+  document.getElementById('ac').textContent = total;
+  document.getElementById('acFormula').textContent = fullFormula;
+}
+
+function updateShieldAC(){
+  // Legacy call — now just recalculates everything
+  calcAC();
+}
+
+// ── AC PANEL MODAL ──────────────────────────────────────
+const ARMOR_PRESETS = {
+  light:  [{name:'Padded',ac:11},{name:'Leather',ac:11},{name:'Studded Leather',ac:12}],
+  medium: [{name:'Hide',ac:12},{name:'Chain Shirt',ac:13},{name:'Scale Mail',ac:14},{name:'Breastplate',ac:14},{name:'Half Plate',ac:15}],
+  heavy:  [{name:'Ring Mail',ac:14},{name:'Chain Mail',ac:16},{name:'Splint',ac:17},{name:'Plate',ac:18}],
+};
+
+function openACPanel(){
+  const overlay = getOrCreateOverlay('ac-panel-overlay');
+  const a = window._ac;
+  const cls = getCurrentClass();
+  const clsName = cls ? cls.name : '';
+  const hasUnarmored = clsName==='Barbarian'||clsName==='Monk';
+
+  const modeBtn = (id,label,active) =>
+    `<button onclick="acSetMode('${id}')" style="font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;
+    border-radius:4px;cursor:pointer;border:1.5px solid ${active?'var(--gold)':'var(--border)'};
+    background:${active?'rgba(200,146,42,.15)':'transparent'};color:${active?'var(--ink)':'var(--ink3)'};
+    font-weight:${active?700:400};">${label}</button>`;
+
+  // Armor preset buttons for current mode
+  let presetHtml = '';
+  if(ARMOR_PRESETS[a.mode]){
+    presetHtml = `<div style="margin-bottom:8px;">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);margin-bottom:4px;">QUICK SELECT</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        ${ARMOR_PRESETS[a.mode].map(p=>
+          `<button onclick="acSelectPreset('${p.name}',${p.ac})"
+            style="font-family:'Cinzel',serif;font-size:11px;padding:4px 10px;border-radius:4px;cursor:pointer;
+            border:1.5px solid ${a.armorName===p.name?'var(--gold)':'var(--borderl)'};
+            background:${a.armorName===p.name?'rgba(200,146,42,.15)':'transparent'};
+            color:${a.armorName===p.name?'var(--ink)':'var(--ink3)'};">
+            ${p.name} (${p.ac})</button>`
+        ).join('')}
+      </div>
+    </div>`;
+  }
+
+  overlay.innerHTML = `
+    <div style="background:var(--parchment);border:3px solid var(--border);border-radius:8px;max-width:520px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6);">
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:12px;">Armor Class Calculator</div>
+
+      <div style="margin-bottom:12px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);margin-bottom:6px;">ARMOR TYPE</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${modeBtn('unarmored','Unarmored'+(hasUnarmored?' Defense':''),a.mode==='unarmored')}
+          ${modeBtn('light','Light Armor',a.mode==='light')}
+          ${modeBtn('medium','Medium Armor',a.mode==='medium')}
+          ${modeBtn('heavy','Heavy Armor',a.mode==='heavy')}
+          ${modeBtn('special','Special / Spell',a.mode==='special')}
+        </div>
+      </div>
+
+      ${presetHtml}
+
+      ${a.mode!=='unarmored'?`
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);margin-bottom:4px;">ARMOR NAME</div>
+          <input id="acArmorName" value="${a.armorName}" placeholder="e.g. Chain Mail"
+            oninput="window._ac.armorName=this.value;calcAC();"
+            style="font-family:'Crimson Text',serif;font-size:14px;width:100%;border:none;border-bottom:1.5px solid var(--borderl);background:transparent;color:var(--ink);outline:none;padding:2px 0;" />
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);margin-bottom:4px;">BASE AC</div>
+          <input id="acArmorBase" type="number" value="${a.armorBase||''}" min="1" max="25"
+            oninput="window._ac.armorBase=parseInt(this.value)||0;calcAC();"
+            style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;width:60px;border:none;border-bottom:1.5px solid var(--borderl);background:transparent;color:var(--ink);text-align:center;outline:none;" />
+        </div>
+      </div>`:
+      `<div style="font-family:'Crimson Text',serif;font-size:13px;color:var(--ink3);margin-bottom:10px;padding:8px;background:rgba(0,0,0,.04);border-radius:4px;">
+        ${clsName==='Barbarian'?'Barbarian: 10 + DEX + CON':clsName==='Monk'?'Monk: 10 + DEX + WIS':'Standard: 10 + DEX mod'}</div>`}
+
+      <div style="border-top:1px solid var(--borderl);padding-top:10px;margin-bottom:10px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--ink3);margin-bottom:6px;">SHIELD &amp; OTHER BONUSES</div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="acShield" ${a.shield?'checked':''} onchange="window._ac.shield=this.checked;calcAC();renderACPanel();"
+              style="width:15px;height:15px;accent-color:var(--gold);cursor:pointer;" />
+            <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--ink2);">Shield</span>
+          </label>
+          ${a.shield?`<div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);">Bonus:</span>
+            <input type="number" id="acShieldBonus" value="${a.shieldBonus}" min="1" max="10"
+              oninput="window._ac.shieldBonus=parseInt(this.value)||2;calcAC();"
+              style="font-family:'Cinzel',serif;font-size:14px;width:44px;border:none;border-bottom:1.5px solid var(--borderl);background:transparent;color:var(--ink);text-align:center;outline:none;" />
+          </div>`:''}
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);">Other (spells/magic):</span>
+            <input type="number" id="acOther" value="${a.otherBonus||0}"
+              oninput="window._ac.otherBonus=parseInt(this.value)||0;calcAC();"
+              style="font-family:'Cinzel',serif;font-size:14px;width:44px;border:none;border-bottom:1.5px solid var(--borderl);background:transparent;color:var(--ink);text-align:center;outline:none;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(200,146,42,.1);border:1.5px solid var(--gold);border-radius:6px;padding:10px;margin-bottom:12px;text-align:center;">
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--ink3);margin-bottom:2px;">CALCULATED AC</div>
+        <div style="font-family:'Cinzel',serif;font-size:32px;font-weight:700;color:var(--ink);" id="acPreview">—</div>
+        <div style="font-family:'Crimson Text',serif;font-size:12px;color:var(--ink3);" id="acFormulaPreview">—</div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;">
+        <button onclick="document.getElementById('ac-panel-overlay').style.display='none'"
+          style="font-family:'Cinzel',serif;font-size:12px;background:var(--red);color:white;border:none;border-radius:5px;padding:8px 20px;cursor:pointer;">
+          Done ✓</button>
+      </div>
+    </div>`;
+
+  overlay.style.display='flex';
+  // Update live preview
+  updateACPreview();
+}
+
+function acSetMode(mode){
+  window._ac.mode = mode;
+  if(mode==='unarmored'){ window._ac.armorBase=0; window._ac.armorName=''; }
+  calcAC();
+  openACPanel(); // re-render
+}
+
+function acSelectPreset(name, ac){
+  window._ac.armorName = name;
+  window._ac.armorBase = ac;
+  calcAC();
+  openACPanel();
+}
+
+function renderACPanel(){
+  openACPanel(); // full re-render
+}
+
+function updateACPreview(){
+  // Mirror the live AC into the panel preview
+  const acEl = document.getElementById('ac');
+  const fEl  = document.getElementById('acFormula');
+  const prev = document.getElementById('acPreview');
+  const fprev = document.getElementById('acFormulaPreview');
+  if(prev && acEl) prev.textContent = acEl.textContent;
+  if(fprev && fEl) fprev.textContent = fEl.textContent;
+}
+
+function openClassSkillPicker(cls){
+  if(!cls.skillPool||!cls.skillPool.length) return;
+  window._classSkillCls=cls;
+  window._classSkillChosen=[];
+  renderClassSkillPicker();
+}
+
+function renderClassSkillPicker(){
+  const cls=window._classSkillCls;
+  if(!cls)return;
+  const count=cls.skillCount;
+  const chosen=window._classSkillChosen||[];
+  const remaining=count-chosen.length;
+  const attrColors={str:'#8b1a1a',dex:'#1a5a1a',con:'#7a5010',int:'#1a3a6a',wis:'#3a1a6a',cha:'#6a1a3a'};
+
+  const btnHtml=cls.skillPool.map(sk=>{
+    const skObj=SKILLS.find(s=>s.name===sk);
+    const col=skObj?attrColors[skObj.attr]:'var(--border)';
+    const isBg=skillProf[sk]&&!chosen.includes(sk); // already from background
+    const isSel=chosen.includes(sk);
+    const canAdd=!isSel&&remaining>0&&!isBg;
+    return `<button onclick="classSkillToggle('${sk}')"
+      style="font-family:'Cinzel',serif;font-size:11px;padding:5px 11px;border-radius:4px;cursor:${(canAdd||isSel)?'pointer':'not-allowed'};
+      border:1.5px solid ${isSel?col:isBg?'var(--borderl)':'var(--border)'};
+      background:${isSel?col+'22':isBg?'rgba(0,0,0,.04)':'transparent'};
+      color:${isSel?col:isBg?'var(--ink4)':'var(--ink2)'};
+      opacity:${(!canAdd&&!isSel)?0.45:1};font-weight:${isSel?700:400};">
+      ${isSel?'✓ ':isBg?'• ':''}${sk}${skObj?'<span style="font-size:9px;opacity:.6;margin-left:3px;">'+skObj.attr.toUpperCase()+'</span>':''}
+    </button>`;
+  }).join('');
+
+  const done=chosen.length===count;
+  const overlay=getOrCreateOverlay('skill-pick-overlay');
+  overlay.innerHTML=`
+    <div style="background:var(--parchment);border:3px solid var(--border);border-radius:8px;max-width:580px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:85vh;overflow-y:auto;">
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;">${cls.name} — Class Skills</div>
+      <div style="font-family:'Crimson Text',serif;font-size:14px;color:var(--ink3);margin-bottom:1rem;">
+        Choose <strong>${count}</strong> skill${count>1?'s':''} to be proficient in.
+        ${remaining>0?`<span style="color:var(--gold);font-weight:700;"> ${remaining} left.</span>`:'<span style="color:var(--green);font-weight:700;"> ✓ All chosen!</span>'}
+        <br><span style="font-size:12px;">• = already proficient from background (can't pick again — choose a different skill).</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;">${btnHtml}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <button onclick="document.getElementById('skill-pick-overlay').style.display='none'"
+          style="font-family:'Cinzel',serif;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--ink3);padding:5px 12px;border-radius:4px;cursor:pointer;">
+          Skip for now</button>
+        ${done?`<button onclick="confirmClassSkills()"
+          style="font-family:'Cinzel',serif;font-size:12px;background:var(--red);color:white;border:none;border-radius:5px;padding:8px 20px;cursor:pointer;">
+          Confirm ${count} Skills →</button>`:''}
+      </div>
+    </div>`;
+  overlay.style.display='flex';
+}
+
+function classSkillToggle(skillName){
+  const cls=window._classSkillCls;
+  if(!cls)return;
+  let chosen=window._classSkillChosen||[];
+  const idx=chosen.indexOf(skillName);
+  if(idx>=0){
+    chosen.splice(idx,1);
+  } else {
+    if(chosen.length>=cls.skillCount)return;
+    if(skillProf[skillName]&&!chosen.includes(skillName))return;
+    chosen.push(skillName);
+  }
+  window._classSkillChosen=chosen;
+  renderClassSkillPicker();
+}
+
+function confirmClassSkills(){
+  const chosen=window._classSkillChosen||[];
+  // Remove previous class skills
+  if(window._prevClassSkills){
+    window._prevClassSkills.forEach(sk=>{if(skillProf[sk]===1)delete skillProf[sk];});
+  }
+  chosen.forEach(sk=>{skillProf[sk]=1;});
+  window._prevClassSkills=chosen;
+  const overlay=document.getElementById('skill-pick-overlay');
+  if(overlay) overlay.style.display='none';
+  updateAll();
+  showToast('✓ Class skills applied: '+chosen.join(', '));
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  currentModal=null;pendingPick=null;
+}
+
+// ════════════════════════════════════════════════════
+// ATTACKS
+// ════════════════════════════════════════════════════
+function rollAttack(btn){
+  const row=btn.closest('.atk-row2');
+  const inp=row.querySelectorAll('input');
+  const name=inp[0].value||'Attack';
+  const hitBonus=parseInt(inp[1].value)||0;
+  const dmgStr=inp[2].value||'1d6';
+  const nat=rand(20); const hitTotal=nat+hitBonus;
+  const crit=nat===20; const fumble=nat===1;
+  let dmg=rollDmgStr(dmgStr,crit);
+  let msg=`${name}: Hit [${nat}]${fmtM(hitBonus)}=${hitTotal}`;
+  if(crit) msg+=` ✦CRIT! | Dmg: ${dmg.breakdown}=${dmg.total}`;
+  else if(fumble) msg+=' ✗ MISS';
+  else msg+=` | Dmg: ${dmg.breakdown}=${dmg.total}`;
+  setRoll(msg, hitTotal, crit, fumble);
+  addLog({label:name, sides:20, natural:nat, mod:hitBonus, total:hitTotal, crit, fumble, extra:`Dmg: ${dmg.total}`});
+  if(crit) showToast('✦ CRITICAL HIT! Damage doubled!');
+  btn.classList.add('rolling'); setTimeout(()=>btn.classList.remove('rolling'),500);
+}
+
+function rollDmgStr(str,dbl){
+  // normalise: uppercase D → lowercase, strip spaces, strip trailing type labels
+  str = str.toLowerCase().trim().replace(/\s+/g,'');
+  // strip trailing non-numeric damage type text e.g. "slashing","piercing","fire"
+  str = str.replace(/[a-z]+$/, '').replace(/[^0-9d+\-]/g,'');
+  const m = str.match(/^(\d*)[d](\d+)([+\-]\d+)?$/);
+  if(!m){
+    // fallback: maybe it's just a flat number
+    const f = parseInt(str) || 0;
+    return {total: f, breakdown: String(f)};
+  }
+  const cnt = (parseInt(m[1]) || 1) * (dbl ? 2 : 1);
+  const sides = parseInt(m[2]);
+  const bonus = parseInt(m[3]) || 0;
+  let rolls = [];
+  for(let i = 0; i < cnt; i++) rolls.push(rand(sides));
+  const sum = rolls.reduce((a,b) => a+b, 0) + bonus;
+  const breakdown = `[${rolls.join('+')}]${bonus !== 0 ? fmtM(bonus) : ''}`;
+  return {total: sum, breakdown};
+}
+
+// ════════════════════════════════════════════════════
+// DICE ROLLER
+// ════════════════════════════════════════════════════
+function rollDie(sides,label,modOverride){
+  const mod=modOverride!==undefined?modOverride:parseInt(document.getElementById('dMod').value)||0;
+  const nat=rand(sides);const total=nat+mod;
+  const crit=sides===20&&nat===20;const fumble=sides===20&&nat===1;
+  let str=label+': ['+ nat+']'+(mod!==0?fmtM(mod):'');
+  if(crit)str+=' ✦ CRIT!';if(fumble)str+=' ✗ FUMBLE';
+  setRoll(str,total,crit,fumble);
+  addLog({label,sides,natural:nat,mod,total,crit,fumble});
+  if(crit)showToast('✦ CRITICAL HIT! Natural 20!');
+  if(fumble)showToast('✗ CRITICAL FUMBLE! Natural 1...');
+  if(event&&event.currentTarget&&event.currentTarget.classList.contains('d-btn')){
+    const b=event.currentTarget;b.classList.add('rolling');setTimeout(()=>b.classList.remove('rolling'),500);
+  }
+}
+
+function quickRoll(sides,label,mod){
+  rollDie(sides,label,mod);
+}
+
+function rollCustom(){
+  const inp=document.getElementById('customIn').value.trim();if(!inp)return;
+  const xmod=parseInt(document.getElementById('dMod').value)||0;
+  const m=inp.match(/^(\d*)[dD](\d+)([+-]\d+)?$/);
+  if(!m){showToast('Format: 2d6+3');return;}
+  const cnt=parseInt(m[1])||1;const sides=parseInt(m[2]);const bonus=parseInt(m[3])||0;
+  let rolls=[];for(let i=0;i<cnt;i++)rolls.push(rand(sides));
+  const sum=rolls.reduce((a,b)=>a+b,0)+bonus+xmod;
+  const label=`${cnt}d${sides}${bonus!==0?fmtM(bonus):''}`;
+  const crit=cnt===1&&sides===20&&rolls[0]===20;
+  const fumble=cnt===1&&sides===20&&rolls[0]===1;
+  document.getElementById('roll-disp').textContent=`${label}: [${rolls.join('+')}]${bonus!==0?fmtM(bonus):''}`;
+  document.getElementById('roll-tot').textContent=sum;
+  document.getElementById('roll-tot').className=crit?'crit':fumble?'fumble':'';
+  addLog({label,sides,natural:rolls[0],mod:bonus+xmod,total:sum,crit,fumble});
+  if(crit)showToast('✦ CRITICAL HIT!');
+}
+
+function setRoll(str,total,crit,fumble){
+  const d=document.getElementById('roll-disp');
+  const t=document.getElementById('roll-tot');
+  d.textContent=str;t.textContent=total;
+  t.className=crit?'crit':fumble?'fumble':'';
+  d.classList.remove('flash');void d.offsetWidth;d.classList.add('flash');
+}
+
+function addLog(e){
+  rollHistory.unshift(e);if(rollHistory.length>40)rollHistory.pop();
+  const c=document.getElementById('log-entries');c.innerHTML='';
+  rollHistory.forEach(r=>{
+    const d=document.createElement('div');d.className='log-e';
+    let html=r.label+': ';
+    if(r.crit)html+=`<span class="lc lt">${r.total} ✦CRIT</span>`;
+    else if(r.fumble)html+=`<span class="lf lt">${r.total} ✗</span>`;
+    else html+=`<span class="lt">${r.total}</span>`;
+    if(r.extra)html+=' '+r.extra;
+    d.innerHTML=html;c.appendChild(d);
+  });
+}
+
+function toggleLog(){document.getElementById('log-panel').classList.toggle('open');}
+
+let _tt;
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// DM VIEW PANEL
+// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// PARTY / DM SYSTEM — PeerJS P2P
+// ════════════════════════════════════════════════════
+let dmActive = false;
+let dmConditions = {};
+const CONDITIONS = ['Blinded','Charmed','Deafened','Exhausted','Frightened','Grappled','Incapacitated','Invisible','Paralyzed','Petrified','Poisoned','Prone','Restrained','Stunned','Unconscious'];
+
+// PeerJS state
+let _peer = null;          // player's Peer object
+let _dmConn = null;        // player's persistent connection to DM
+let _shareInterval = null; // broadcast timer
+let _dmPeer = null;        // DM's Peer (when in DM mode)
+let _dmConns = {};         // {peerId: DataConnection} — DM tracks all players
+let _playerData = {};      // {slot: snapshot} — DM stores received data
+let _dmViewOpen = false;
+
+function getRoomCode(){
+  return (document.getElementById('roomCode')?.value||'').trim().toUpperCase();
+}
+function getSlot(){
+  return document.getElementById('partySlot')?.value||'P1';
+}
+function playerPeerId(room, slot){ return 'dnd-'+room+'-'+slot; }
+function dmPeerId(room){ return 'dnd-'+room+'-DM'; }
+
+// ── STATUS DISPLAY ────────────────────────────────────
+function setPeerStatus(msg, color){
+  const el = document.getElementById('peerStatus');
+  if(el){ el.textContent = msg; el.style.color = color||'var(--ink3)'; }
+}
+
+// ── PLAYER: START SHARING ─────────────────────────────
+// PeerJS server config
+// Uses the default PeerJS cloud with STUN/TURN for NAT traversal across networks
+function makePeerConfig(){
+  // Uses PeerJS default cloud signaling + public STUN/TURN for cross-network P2P
+  // Works on GitHub Pages, any HTTPS host, or local file
+  return {
+    config: {
+      iceServers: [
+        // Google STUN — find public IP
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        // Cloudflare STUN
+        { urls: 'stun:stun.cloudflare.com:3478' },
+        // Free TURN relay — handles strict NAT, firewalls, mobile networks
+        { urls: 'turn:freestun.net:3479', username:'free', credential:'free' },
+        { urls: 'turns:freestun.net:5350', username:'free', credential:'free' },
+      ]
+    },
+    debug: 1  // show connection info in browser console for debugging
+  };
+}
+
+function startSharing(){
+  const room = getRoomCode();
+  if(!room){ showToast('⚠ Enter a room code first!'); return; }
+  const slot = getSlot();
+  const peerId = playerPeerId(room, slot);
+
+  if(_peer){ _peer.destroy(); _peer=null; }
+  if(_shareInterval){ clearInterval(_shareInterval); _shareInterval=null; }
+  _dmConn = null;
+
+  setPeerStatus('Connecting…','#c8922a');
+
+  _peer = new Peer(peerId, makePeerConfig());
+
+  _peer.on('open', id => {
+    setPeerStatus('● Sharing as '+slot,'#2d8a2d');
+    document.getElementById('shareBtn').style.display='none';
+    document.getElementById('stopBtn').style.display='inline-block';
+    showToast('📡 Sharing as '+slot+' in room '+room+'!');
+    // Connect to DM and keep connection alive
+    connectToDM(room, slot);
+    // Resend data periodically (reconnects if needed)
+    _shareInterval = setInterval(()=>sendSnapshot(room, slot), 2500);
+  });
+
+  _peer.on('error', err => {
+    const msg = err.type==='unavailable-id'
+      ? '⚠ Slot '+slot+' taken! Pick another.'
+      : err.type==='network'
+      ? '⚠ Network error — check internet connection'
+      : '⚠ '+err.message;
+    setPeerStatus(msg,'#c05050');
+    showToast(msg);
+    if(err.type==='unavailable-id') stopSharing(true);
+  });
+
+  _peer.on('disconnected', ()=>{
+    setPeerStatus('Reconnecting…','#c8922a');
+    // Try built-in reconnect first
+    setTimeout(()=>{
+      if(_peer && !_peer.destroyed){
+        try{ _peer.reconnect(); }
+        catch(e){
+          // If reconnect fails, restart fresh
+          stopSharing(true);
+          setTimeout(()=>startSharing(), 1000);
+        }
+      }
+    }, 2000);
+  });
+}
+
+function connectToDM(room, slot){
+  if(!_peer||_peer.destroyed) return;
+  const dmId = dmPeerId(room);
+  try{
+    const conn = _peer.connect(dmId, {reliable:true, serialization:'json'});
+    conn.on('open', ()=>{
+      _dmConn = conn;
+      setPeerStatus('● Live to DM','#2d8a2d');
+      // Send immediately
+      const snap = getPartySnapshot();
+      snap.room = room;
+      conn.send(snap);
+    });
+    conn.on('close', ()=>{
+      _dmConn = null;
+      setPeerStatus('● Sharing (DM offline)','#c8922a');
+    });
+    conn.on('error', ()=>{ _dmConn = null; });
+  }catch(e){}
+}
+
+function sendSnapshot(room, slot){
+  if(!_peer||_peer.destroyed) return;
+  const snap = getPartySnapshot();
+  snap.room = room;
+  if(_dmConn && _dmConn.open){
+    try{ _dmConn.send(snap); } catch(e){ _dmConn=null; }
+  } else {
+    // DM connection lost — try to reconnect
+    _dmConn = null;
+    connectToDM(room, slot);
+  }
+}
+
+function stopSharing(silent){
+  if(_shareInterval){ clearInterval(_shareInterval); _shareInterval=null; }
+  if(_dmConn){ try{_dmConn.close();}catch(e){} _dmConn=null; }
+  if(_peer){ _peer.destroy(); _peer=null; }
+  setPeerStatus('','');
+  document.getElementById('shareBtn').style.display='inline-block';
+  document.getElementById('stopBtn').style.display='none';
+  if(!silent) showToast('■ Stopped sharing');
+}
+
+function openPartyDMView(){
+  const room = getRoomCode();
+  if(!room){ showToast('⚠ Enter a room code first!'); return; }
+
+  let overlay = document.getElementById('dm-party-overlay');
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.id = 'dm-party-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:900;background:#110c06;overflow:auto;display:none;';
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = 'block';
+  _dmViewOpen = true;
+  _playerData = {};
+
+  if(_dmPeer){ _dmPeer.destroy(); _dmPeer=null; }
+  _dmConns = {};
+
+  renderInPageDMView('Connecting to room <strong style="color:var(--gold2);letter-spacing:.15em;">'+room+'</strong>…');
+
+  _dmPeer = new Peer(dmPeerId(room), makePeerConfig());
+
+  _dmPeer.on('open', id => {
+    showToast('🎲 DM View open — room: '+room);
+    renderInPageDMView();
+    window._dmRefreshInterval = setInterval(renderInPageDMView, 3000);
+  });
+
+  _dmPeer.on('connection', conn => {
+    const connId = conn.peer;
+    _dmConns[connId] = conn;
+    conn.on('data', snap => {
+      _playerData[snap.slot] = snap;
+      if(_dmViewOpen) renderInPageDMView();
+    });
+    conn.on('close', ()=>{ delete _dmConns[connId]; });
+    conn.on('error', ()=>{ delete _dmConns[connId]; });
+  });
+
+  _dmPeer.on('error', err => {
+    if(err.type==='unavailable-id'){
+      showToast('⚠ Another DM is already in room '+room+'!');
+      renderInPageDMView('⚠ Room '+room+' already has a DM. Choose a different room code.');
+    } else if(err.type==='network'||err.type==='server-error'){
+      renderInPageDMView('⚠ Cannot reach PeerJS server. Check your internet connection and try again.');
+    } else {
+      renderInPageDMView('⚠ Error: '+err.message);
+    }
+  });
+
+  _dmPeer.on('disconnected', ()=>{
+    renderInPageDMView('⚠ Disconnected. Reconnecting… (keep this window open)');
+    let attempts=0;
+    const tryReconnect=()=>{
+      attempts++;
+      if(!_dmPeer||_dmPeer.destroyed) return;
+      try{
+        _dmPeer.reconnect();
+        setTimeout(()=>{
+          if(_dmPeer && !_dmPeer.open && attempts<5) tryReconnect();
+        }, 3000);
+      } catch(e){
+        if(attempts<5) setTimeout(tryReconnect, 3000);
+      }
+    };
+    setTimeout(tryReconnect, 2000);
+  });
+}
+
+function closePartyDMView(){
+  const overlay = document.getElementById('dm-party-overlay');
+  if(overlay) overlay.style.display = 'none';
+  _dmViewOpen = false;
+  if(window._dmRefreshInterval){ clearInterval(window._dmRefreshInterval); window._dmRefreshInterval=null; }
+  if(_dmPeer){ _dmPeer.destroy(); _dmPeer=null; }
+  _dmConns = {};
+}
+
+// ── RENDER DM PANEL ───────────────────────────────────
+function renderInPageDMView(statusMsg){
+  const overlay = document.getElementById('dm-party-overlay');
+  if(!overlay || !_dmViewOpen) return;
+
+  const fmtM = n => (n>=0?'+':'')+n;
+  const STALE_MS = 8000;
+  const room = getRoomCode();
+  const players = Object.values(_playerData);
+
+  const cardHTML = !players.length
+    ? `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+        <div style="font-family:'Cinzel',serif;font-size:18px;color:#555;margin-bottom:12px;">Waiting for players…</div>
+        <div style="font-family:'Crimson Text',serif;font-size:14px;color:#444;">
+          Room code: <strong style="color:var(--gold2);letter-spacing:.15em;">${room}</strong><br><br>
+          Ask each player to:<br>
+          1. Enter room code <strong style="color:var(--gold2);">${room}</strong> in their sheet<br>
+          2. Choose their slot (P1–P6)<br>
+          3. Click <strong style="color:#c8922a;">📡 Share</strong>
+        </div>
+      </div>`
+    : players.map(p => {
+        const hpMax = p.hpMax||0;
+        const hpCur = p.hpCur||0;
+        const hpTemp = p.hpTemp||0;
+        const hpPct  = hpMax>0 ? Math.max(0,Math.min(100,hpCur/hpMax*100)) : 0;
+        const hpColor = hpPct>50?'#2d8a2d':hpPct>25?'#c8922a':'#8b1a1a';
+        const bloodied = hpCur <= Math.floor(hpMax/2) && hpMax>0;
+        const online = (Date.now()-p.timestamp) < STALE_MS;
+        const conditions = Object.keys(p.conditions||{}).filter(k=>p.conditions[k]);
+        const condHtml = conditions.map(c=>`<span style="font-family:'Cinzel',serif;font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(139,26,26,.35);border:1px solid rgba(139,26,26,.5);color:#e08080;">${c}</span>`).join('');
+        const borderColor = !online?'#2a1a10':hpPct<=25?'#8b1a1a':hpPct<=50?'var(--gold)':'#2d6a1b';
+
+        const savesHtml = (p.saves||[]).map(s=>
+          `<div style="flex:1;text-align:center;background:#110c06;border:1px solid ${s.pro?'var(--gold)':'#2a1a10'};border-radius:3px;padding:4px 2px;">
+            <span style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:${s.pro?'var(--gold2)':'#555'};display:block;">${s.key.toUpperCase()}</span>
+            <span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:${s.pro?'var(--gold2)':'#888'};display:block;">${fmtM(s.total)}</span>
+          </div>`).join('');
+
+        // All skills grouped by ability
+        const attrOrder=['str','dex','con','int','wis','cha'];
+        const attrColors={str:'#8b1a1a',dex:'#1a5a1a',con:'#7a5010',int:'#1a3a6a',wis:'#3a1a6a',cha:'#6a1a3a'};
+        const attrLabels={str:'STR',dex:'DEX',con:'CON',int:'INT',wis:'WIS',cha:'CHA'};
+        const skillsHtml = attrOrder.map(attr=>{
+          const sk=(p.skills||[]).filter(s=>s.attr===attr);
+          if(!sk.length) return '';
+          return `<div style="break-inside:avoid;padding:2px 4px;">
+            <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:${attrColors[attr]};padding:1px 4px;margin-bottom:1px;">${attrLabels[attr]}</div>
+            ${sk.map(s=>`<div style="display:flex;justify-content:space-between;padding:1px 5px;border-bottom:.5px solid #1a1008;">
+              <span style="font-size:11px;color:${s.prof?'#ccc':'#555'};">${s.name}${s.prof?' ●':''}</span>
+              <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:600;color:${s.prof?'var(--gold2)':'#555'};">${fmtM(s.bonus)}</span>
+            </div>`).join('')}
+          </div>`;
+        }).join('');
+
+        const noteKey = 'dmNote_'+p.slot;
+        return `<div style="background:#1a1208;border:1.5px solid ${borderColor};border-radius:10px;overflow:hidden;${!online?'opacity:.5;filter:grayscale(.5)':''};">
+          <div style="background:#261808;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #3a2a10;">
+            <div>
+              <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:white;">${p.charName}</div>
+              <div style="font-size:12px;color:#888;font-style:italic;">${[p.classLvl,p.species].filter(Boolean).join(' · ')}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:3px;background:rgba(200,146,42,.2);color:var(--gold2);border:1px solid rgba(200,146,42,.4);">${p.slot}</span>
+              <span style="font-size:9px;color:${online?'#2d8a2d':'#555'};">${online?'● LIVE':'○ OFFLINE'}</span>
+            </div>
+          </div>
+          <div style="padding:12px;">
+            <!-- Top stats -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;">
+              ${[['AC',p.ac],['Initiative',p.initVal],['Speed',p.speed+'ft'],['Pass. Perc.',p.passPerc]].map(([lbl,val])=>
+                `<div style="background:#110c06;border:1px solid #2a1a10;border-radius:5px;padding:6px 4px;text-align:center;">
+                  <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:#666;text-transform:uppercase;margin-bottom:2px;">${lbl}</div>
+                  <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:white;">${val}</div>
+                </div>`).join('')}
+            </div>
+            <!-- HP -->
+            <div style="margin-bottom:8px;">
+              <div style="display:flex;align-items:baseline;gap:5px;margin-bottom:4px;">
+                <span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:${hpColor};">${hpCur}</span>
+                <span style="font-size:14px;color:#555;">/ ${hpMax}</span>
+                ${hpTemp>0?`<span style="font-family:'Cinzel',serif;font-size:11px;color:var(--gold2);">+${hpTemp} tmp</span>`:''}
+                ${bloodied?`<span style="font-family:'Cinzel',serif;font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(139,26,26,.5);color:#ff9090;margin-left:4px;">🩸 Bloodied</span>`:''}
+              </div>
+              <div style="height:8px;background:#2a1a08;border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${hpPct}%;background:${hpColor};border-radius:4px;transition:width .5s;"></div>
+              </div>
+              ${conditions.length?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;">${condHtml}</div>`:''}
+            </div>
+            <!-- Saving Throws -->
+            <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:#555;text-transform:uppercase;margin:6px 0 4px;">Saving Throws</div>
+            <div style="display:flex;gap:3px;margin-bottom:8px;">${savesHtml}</div>
+            <!-- All Skills -->
+            <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:#555;text-transform:uppercase;margin-bottom:4px;">Skills</div>
+            <div style="background:#110c06;border-radius:4px;padding:4px 0;margin-bottom:8px;columns:2;column-gap:0;">${skillsHtml}</div>
+            <!-- DM Notes -->
+            <textarea id="${noteKey}" placeholder="DM notes for ${p.charName}…" rows="2"
+              style="width:100%;background:#110c06;border:1px solid #333;border-radius:3px;color:#bbb;font-family:'Crimson Text',serif;font-size:12px;padding:5px 7px;resize:none;outline:none;"
+              onchange="window._dmNotes=window._dmNotes||{};window._dmNotes['${noteKey}']=this.value">${(window._dmNotes||{})[noteKey]||''}</textarea>
+          </div>
+        </div>`;
+      }).join('');
+
+  overlay.innerHTML = `
+    <div style="background:#1a1208;border-bottom:2px solid var(--gold);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;">
+      <div style="font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--gold2);letter-spacing:.1em;">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2d8a2d;margin-right:6px;animation:pulse 2s infinite;"></span>
+        🎲 DM Party View &nbsp;·&nbsp;
+        <span style="font-size:11px;letter-spacing:.2em;color:var(--gold);">Room: ${room}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:'Cinzel',serif;font-size:10px;color:#555;" id="dm-live-time"></span>
+        <button onclick="closePartyDMView()" style="font-family:'Cinzel',serif;font-size:12px;background:transparent;border:1px solid #555;color:#888;border-radius:4px;padding:4px 14px;cursor:pointer;">✕ Close</button>
+      </div>
+    </div>
+    ${statusMsg?`<div style="padding:20px;font-family:'Cinzel',serif;font-size:13px;color:#888;text-align:center;">${statusMsg}</div>`:''}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;padding:16px;">${cardHTML}</div>`;
+
+  const t = document.getElementById('dm-live-time');
+  if(t) t.textContent = players.length+' player'+(players.length!==1?'s':'')+' · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// ── LEGACY COMPATIBILITY ──────────────────────────────
+function broadcastToParty(){ startSharing(); }
+function stopBroadcast(){ stopSharing(); }
+function openDMView(){ openPartyDMView(); }
+function renderDMPanel(){}
+function toggleDMCondition(name){ dmConditions[name]=!dmConditions[name]; }
+function makeDraggable(){}
+function getPlayers(){ return Object.values(_playerData); }
+function exportDMView(){}
+function buildStandaloneDMHTML(){ return ''; }
+
+// ── REMOVED (no longer needed) ────────────────────────
+// dmHPAdj removed — DM view is read-only
+
+// ════════════════════════════════════════════════════
+// SAVE / LOAD SYSTEM
+// ════════════════════════════════════════════════════
+
+function getFieldVal(id){ const el=document.getElementById(id); return el?(el.value||el.textContent||''):'';}
+function setFieldVal(id, val){ const el=document.getElementById(id); if(!el)return; if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT') el.value=val; else el.textContent=val;}
+
+function gatherState(){
+  // Collect all textarea/input values from the sheet
+  const fields={};
+  document.querySelectorAll('.sheet input, .sheet textarea, .sheet select').forEach(el=>{
+    if(el.id) fields[el.id]=el.value;
+  });
+
+  // Collect attacks
+  const attacks=[];
+  document.querySelectorAll('#atkRows .atk-row2').forEach(row=>{
+    const inps=row.querySelectorAll('input');
+    attacks.push({name:inps[0]?.value||'',bonus:inps[1]?.value||'',damage:inps[2]?.value||''});
+  });
+
+  // Collect feats
+  const feats=[];
+  document.querySelectorAll('#featsList .feat-chip').forEach(chip=>{
+    feats.push({name:chip.dataset.fname||chip.textContent, category:[...chip.classList].find(c=>['origin','general','epic'].includes(c))||'general'});
+  });
+
+  return {
+    // Version for future compat
+    version: 2,
+    // Core state
+    baseScores: {...baseScores},
+    asiBonus:   {...asiBonus},
+    level,
+    savingProf: {...savingProf},
+    skillProf:  {...skillProf},
+    expertiseSkills: {...expertiseSkills},
+    featEffects: {...featEffects},
+    featSpeedBonuses: {...featSpeedBonuses},
+    hpRolls:    [...hpRolls],
+    selectedSpecies, selectedBackground,
+    // AC state
+    ac: {...window._ac},
+    // feat tracking
+    featAsiChoices: window._featAsiChoices||{},
+    featSkillGrants: window._featSkillGrants||{},
+    featExpertise: window._featExpertise||{},
+    prevBgFeat: window._prevBgFeat||null,
+    prevBgSkills: window._prevBgSkills||[],
+    prevBgAsi: window._prevBgAsi||{},
+    // UI fields
+    fields, attacks, feats,
+    // timestamp
+    savedAt: new Date().toISOString(),
+    charName: document.getElementById('charName')?.value||(document.getElementById('classLevel')?.value||'Unnamed Hero'),
+  };
+}
+
+function applyState(state){
+  if(!state||!state.version) return false;
+
+  // Restore core state
+  Object.assign(baseScores, state.baseScores||{});
+  Object.assign(asiBonus, state.asiBonus||{});
+  level = state.level||1;
+  Object.keys(savingProf).forEach(k=>savingProf[k]=false);
+  Object.assign(savingProf, state.savingProf||{});
+  Object.keys(skillProf).forEach(k=>delete skillProf[k]);
+  Object.assign(skillProf, state.skillProf||{});
+  Object.keys(expertiseSkills).forEach(k=>delete expertiseSkills[k]);
+  Object.assign(expertiseSkills, state.expertiseSkills||{});
+  Object.assign(featEffects, state.featEffects||{});
+  Object.keys(featSpeedBonuses).forEach(k=>delete featSpeedBonuses[k]);
+  Object.assign(featSpeedBonuses, state.featSpeedBonuses||{});
+  hpRolls.length=0;
+  (state.hpRolls||[]).forEach(r=>hpRolls.push(r));
+  selectedSpecies = state.selectedSpecies||null;
+  selectedBackground = state.selectedBackground||null;
+
+  // Restore AC state
+  if(state.ac) Object.assign(window._ac, state.ac);
+
+  // Restore feat tracking
+  window._featAsiChoices  = state.featAsiChoices||{};
+  window._featSkillGrants = state.featSkillGrants||{};
+  window._featExpertise   = state.featExpertise||{};
+  window._prevBgFeat      = state.prevBgFeat||null;
+  window._prevBgSkills    = state.prevBgSkills||[];
+  window._prevBgAsi       = state.prevBgAsi||{};
+
+  // Restore UI fields
+  Object.entries(state.fields||{}).forEach(([id,val])=>setFieldVal(id,val));
+
+  // Restore attacks
+  const atkRows = document.querySelectorAll('#atkRows .atk-row2');
+  (state.attacks||[]).forEach((atk,i)=>{
+    if(!atkRows[i]) return;
+    const inps=atkRows[i].querySelectorAll('input');
+    if(inps[0]) inps[0].value=atk.name||'';
+    if(inps[1]) inps[1].value=atk.bonus||'';
+    if(inps[2]) inps[2].value=atk.damage||'';
+  });
+
+  // Restore feat chips
+  const featsList = document.getElementById('featsList');
+  if(featsList){
+    featsList.innerHTML='';
+    (state.feats||[]).forEach(f=>{
+      addFeatChip(f.name, f.category);
+    });
+  }
+
+  // Sync legacy flags
+  toughActive = featEffects.tough||false;
+  alertActive = featEffects.alert||false;
+
+  // Update armor badges if class is set
+  const cls = getCurrentClass();
+  if(cls) updateArmorBadges(cls);
+
+  // Re-render everything
+  recalcScores();
+  renderAbilities();
+  updateAll();
+  updateTraitsBanner();
+  return true;
+}
+
+function saveChar(){
+  const slot = document.getElementById('saveSlot').value;
+  const state = gatherState();
+  localStorage.setItem('dnd_'+slot, JSON.stringify(state));
+  updateSlotInfo();
+  showToast('✓ Saved to '+slot.replace('slot','Slot ')+'!');
+}
+
+function loadChar(){
+  const slot = document.getElementById('saveSlot').value;
+  const raw = localStorage.getItem('dnd_'+slot);
+  if(!raw){ showToast('No save in '+slot.replace('slot','Slot ')+'!'); return; }
+  const state = JSON.parse(raw);
+  if(applyState(state)){
+    showToast('📂 Loaded: '+(state.charName||'Character'));
+    updateSlotInfo();
+  }
+}
+
+function deleteSlot(){
+  const slot = document.getElementById('saveSlot').value;
+  if(!localStorage.getItem('dnd_'+slot)){ showToast('Slot is already empty.'); return; }
+  if(!confirm('Delete save in '+slot.replace('slot','Slot ')+'?')) return;
+  localStorage.removeItem('dnd_'+slot);
+  updateSlotInfo();
+  showToast('🗑 Slot deleted.');
+}
+
+function exportChar(){
+  const state = gatherState();
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (state.charName||'character').replace(/[^a-z0-9]/gi,'_')+'_dnd.json';
+  a.click();
+  showToast('⬇ Exported!');
+}
+
+function importChar(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const state = JSON.parse(e.target.result);
+      if(applyState(state)){
+        showToast('⬆ Imported: '+(state.charName||'Character'));
+        updateSlotInfo();
+      } else {
+        alert('Invalid character file.');
+      }
+    } catch(err){ alert('Could not read file: '+err.message); }
+  };
+  reader.readAsText(file);
+  event.target.value=''; // reset so same file can be re-imported
+}
+
+function newChar(){
+  if(!confirm('Start a new blank character sheet? Unsaved changes will be lost.')) return;
+  // Reset all state
+  Object.keys(baseScores).forEach(k=>baseScores[k]=8);
+  Object.keys(asiBonus).forEach(k=>asiBonus[k]=0);
+  level=1;
+  Object.keys(savingProf).forEach(k=>savingProf[k]=false);
+  Object.keys(skillProf).forEach(k=>delete skillProf[k]);
+  Object.keys(expertiseSkills).forEach(k=>delete expertiseSkills[k]);
+  Object.assign(featEffects,{tough:false,alert:false,observant:false,epicFort:false,medArmorMaster:false,heavyArmorProf:false,resilientSave:null});
+  Object.keys(featSpeedBonuses).forEach(k=>delete featSpeedBonuses[k]);
+  hpRolls.length=0;
+  toughActive=false; alertActive=false;
+  selectedSpecies=null; selectedBackground=null;
+  window._ac={mode:'unarmored',armorBase:0,armorName:'',shield:false,shieldBonus:2,otherBonus:0};
+  window._featAsiChoices={}; window._featSkillGrants={}; window._featExpertise={};
+  window._prevBgFeat=null; window._prevBgSkills=[]; window._prevBgAsi={};
+
+  // Clear all text inputs/textareas
+  document.querySelectorAll('.sheet input[type="text"], .sheet input:not([type]), .sheet textarea').forEach(el=>{
+    if(!['shieldBonus','speed','hpTemp'].includes(el.id)) el.value='';
+  });
+  document.getElementById('hpCurrent').value=0;
+  document.getElementById('speed').value=30;
+  document.getElementById('ac').textContent=10;
+  document.getElementById('acFormula').textContent='10 + DEX';
+  document.getElementById('charName').value='';
+  // Clear attack rows
+  document.querySelectorAll('#atkRows input').forEach(el=>el.value='');
+  // Clear feats
+  document.getElementById('featsList').innerHTML='';
+  // Clear traits banner
+  document.getElementById('traitsBanner').innerHTML='';
+
+  recalcScores();
+  renderAbilities();
+  updateAll();
+  showToast('✦ New character started!');
+}
+
+function updateSlotInfo(){
+  const slot = document.getElementById('saveSlot').value;
+  const raw = localStorage.getItem('dnd_'+slot);
+  const el = document.getElementById('slotInfo');
+  if(!el) return;
+  if(!raw){ el.textContent='Empty'; el.style.color='var(--ink4)'; return; }
+  try{
+    const s = JSON.parse(raw);
+    const d = new Date(s.savedAt);
+    const dateStr = d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    el.textContent=(s.charName||'?')+' · '+dateStr;
+    el.style.color='var(--green)';
+  } catch(e){ el.textContent='Corrupt'; el.style.color='var(--red)'; }
+}
+
+document.getElementById('saveSlot').addEventListener('change', updateSlotInfo);
+
+// INIT
+// ════════════════════════════════════════════════════
+// Blank slate — player fills everything
+baseScores.str=8;baseScores.dex=8;baseScores.con=8;baseScores.int=8;baseScores.wis=8;baseScores.cha=8;
+recalcScores();
+// No saving throw profs, no skill profs, no HP rolls until class is chosen
+hpRolls=[];
+renderAbilities();updateAll();
+document.getElementById('hpCurrent').value=0;
+updateSlotInfo(); // show save status on load
+
+// overlay click-outside close
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay'))closeModal();
+});
+document.getElementById('confirm-btn').addEventListener('click',()=>{
+  if(currentModal==='levelup') confirmLevelUp();
+  else confirmPick();
+});
+document.getElementById('modal-close').addEventListener('click',closeModal);
+
+// pre-populate feat list click handlers
+document.querySelectorAll('.feat-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{if(confirm('Remove feat: '+chip.textContent+'?'))chip.remove();});
+});
+</script>
+</body>
+</html>
